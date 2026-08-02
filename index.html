@@ -1401,48 +1401,73 @@
         }
 
         // ==========================================
-        // 🔄 SISTEM LOAD DATA OTOMATIS
+        // 🔄 SISTEM LOAD DATA OTOMATIS (DENGAN CACHE)
         // ==========================================
         window.addEventListener('DOMContentLoaded', async () => {
-            showLoading("LOADING DATA FROM DRIVE...");
+            
+            // 1. Cek memori browser, apakah orang ini sudah pernah buka web kita?
+            const cachedData = localStorage.getItem('portfolioDataCache');
+            
+            if (cachedData) {
+                // Jika sudah pernah, baca data dari memori browser (0 detik!)
+                const parsedData = JSON.parse(cachedData);
+                applyDataToDOM(parsedData); // Langsung tampilkan foto & teks
+            } else {
+                // Jika ini pertama kali buka seumur hidup, tampilkan animasi loading
+                showLoading("LOADING DATA FROM DRIVE...");
+            }
+
+            // 2. Secara diam-diam (di latar belakang), cek ke Drive apakah ada update terbaru
             try {
                 let response = await fetch(SCRIPT_URL);
                 let result = await response.json();
                 
                 if (result && result.globalData) {
-                    const textElements = ['heroTitleLine1', 'heroTitleLine2', 'heroDescText', 'heroTitleText', 'heroRoleText', 'aboutTitle1', 'aboutTitleHighlight', 'aboutTitle2', 'bioP1', 'bioP2', 'bioP3', 'eduUni', 'eduMajor', 'eduGpa', 'eduStatus', 'eduHs', 'eduHsMajor', 'eduHsScore', 'visionTitle', 'visionDesc', 'statExpCount', 'statProjCount', 'skillsMainTitle', 'expMainTitle', 'expSubDesc', 'orgMainTitle', 'orgSubDesc', 'projMainTitle', 'projSubDesc', 'contactTitle1', 'contactTitle2', 'contactDesc', 'contactCopyright'];
+                    // Simpan data terbaru dari Drive ke memori browser
+                    localStorage.setItem('portfolioDataCache', JSON.stringify(result));
                     
-                    textElements.forEach(id => {
-                        if (result.globalData[id] && document.getElementById(id)) {
-                            document.getElementById(id).innerHTML = result.globalData[id];
-                        }
-                    });
-
-                    if (result.globalData.profileImage) document.getElementById('profileImage').src = result.globalData.profileImage;
-                    if (result.globalData.uniLogo) document.getElementById('uniLogo').src = result.globalData.uniLogo;
-                    if (result.globalData.hsLogo) document.getElementById('hsLogo').src = result.globalData.hsLogo;
-                    if (result.globalData.wallpaper) document.getElementById('home-hero').style.backgroundImage = result.globalData.wallpaper;
-                    if (result.globalData.skillsContainerHTML) document.getElementById('skillsContainer').innerHTML = result.globalData.skillsContainerHTML;
-                    if (result.globalData.cvHref) document.getElementById('cvDownloadLink').href = result.globalData.cvHref;
-
-                    if (result.experiences) experiencesData = result.experiences;
-                    if (result.projects) projectsData = result.projects;
-                    if (result.organizations) organizationsData = result.organizations;
-
-                    renderTimeline();
-                    renderOrganizations();
-                    buildProjectsCoverflow();
-                    checkSkillLayout();
+                    // Segarkan tampilan web dengan data terbaru tersebut
+                    applyDataToDOM(result);
                 }
             } catch (error) {
-                console.log("Welcome! No saved data found yet, or error loading:", error);
+                console.log("Error loading:", error);
             }
             
+            // Sembunyikan tombol admin jika pengunjung biasa
             if (!isAdmin) {
                 document.querySelectorAll('.admin-control').forEach(el => el.classList.add('hidden'));
             }
-            hideLoading();
+            hideLoading(); // Matikan animasi loading
         });
+
+        // ==========================================
+        // 🛠️ FUNGSI UNTUK MENAMPILKAN DATA (DIPISAH AGAR RAPI)
+        // ==========================================
+        function applyDataToDOM(result) {
+            const textElements = ['heroTitleLine1', 'heroTitleLine2', 'heroDescText', 'heroTitleText', 'heroRoleText', 'aboutTitle1', 'aboutTitleHighlight', 'aboutTitle2', 'bioP1', 'bioP2', 'bioP3', 'eduUni', 'eduMajor', 'eduGpa', 'eduStatus', 'eduHs', 'eduHsMajor', 'eduHsScore', 'visionTitle', 'visionDesc', 'statExpCount', 'statProjCount', 'skillsMainTitle', 'expMainTitle', 'expSubDesc', 'orgMainTitle', 'orgSubDesc', 'projMainTitle', 'projSubDesc', 'contactTitle1', 'contactTitle2', 'contactDesc', 'contactCopyright'];
+            
+            textElements.forEach(id => {
+                if (result.globalData[id] && document.getElementById(id)) {
+                    document.getElementById(id).innerHTML = result.globalData[id];
+                }
+            });
+
+            if (result.globalData.profileImage) document.getElementById('profileImage').src = result.globalData.profileImage;
+            if (result.globalData.uniLogo) document.getElementById('uniLogo').src = result.globalData.uniLogo;
+            if (result.globalData.hsLogo) document.getElementById('hsLogo').src = result.globalData.hsLogo;
+            if (result.globalData.wallpaper) document.getElementById('home-hero').style.backgroundImage = result.globalData.wallpaper;
+            if (result.globalData.skillsContainerHTML) document.getElementById('skillsContainer').innerHTML = result.globalData.skillsContainerHTML;
+            if (result.globalData.cvHref) document.getElementById('cvDownloadLink').href = result.globalData.cvHref;
+
+            if (result.experiences) experiencesData = result.experiences;
+            if (result.projects) projectsData = result.projects;
+            if (result.organizations) organizationsData = result.organizations;
+
+            renderTimeline();
+            renderOrganizations();
+            buildProjectsCoverflow();
+            checkSkillLayout();
+        }
 
         // ==========================================
         // 💾 SISTEM AUTO-SAVE UNIVERSAL KE DRIVE
