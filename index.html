@@ -816,8 +816,14 @@
             </div>
             
             <!-- Skills Slider (Strict 3 Cards Container) -->
-            <div class="w-full relative px-1 sm:px-0 z-10 overflow-hidden">
-                <div class="skills-slider-view" id="skillsContainer">
+            <div class="w-full relative px-1 sm:px-0 z-10 overflow-hidden group/slider flex items-center">
+                
+                <!-- Navigation Arrows -->
+                <button onclick="scrollSkills(-1)" class="absolute left-0 z-30 w-12 h-12 flex items-center justify-center bg-white/90 backdrop-blur-md rounded-full shadow-lg border border-gray-200 text-eco-sagePrimary hover:bg-eco-sagePrimary hover:text-white transition-all transform -translate-x-2 sm:-translate-x-4 opacity-0 group-hover/slider:opacity-100 focus:opacity-100">
+                    <i class="fas fa-chevron-left pointer-events-none"></i>
+                </button>
+
+                <div class="skills-slider-view no-scrollbar w-full" id="skillsContainer">
                     
                     <!-- Skill 1 -->
                     <div class="eco-card p-8 flex flex-col items-start text-left group/card bg-white relative z-10 hover:shadow-glow-sage hover:border-eco-sageLight transition-all duration-300">
@@ -868,6 +874,11 @@
                         <p class="text-eco-textMuted text-sm mb-2 flex-grow font-light leading-relaxed skill-desc z-10">Carbon assessment, vegetation analysis, ecotourism evaluation, and forest policy compliance.</p>
                     </div>
                 </div>
+                
+                <!-- Navigation Arrows -->
+                <button onclick="scrollSkills(1)" class="absolute right-0 z-30 w-12 h-12 flex items-center justify-center bg-white/90 backdrop-blur-md rounded-full shadow-lg border border-gray-200 text-eco-sagePrimary hover:bg-eco-sagePrimary hover:text-white transition-all transform translate-x-2 sm:translate-x-4 opacity-0 group-hover/slider:opacity-100 focus:opacity-100">
+                    <i class="fas fa-chevron-right pointer-events-none"></i>
+                </button>
             </div>
             
             <!-- Pagination Dots for Slider -->
@@ -876,11 +887,10 @@
             </div>
 
             <!-- UNIFIED SOFTWARE STACK BOX BELOW SKILLS -->
-            <div class="mt-16 eco-card p-6 sm:p-8 bg-white max-w-6xl mx-auto relative group/software hover:border-eco-sageLight transition-all duration-300">
+            <div class="mt-16 eco-card p-6 sm:p-8 bg-white w-full relative group/software hover:border-eco-sageLight transition-all duration-300">
                 <div class="flex justify-between items-center mb-6">
                     <div>
                         <h3 class="font-serif text-2xl sm:text-3xl font-bold text-eco-textMain text-left">Software & Tools Stack</h3>
-                        <p class="text-xs sm:text-sm text-eco-textMuted text-left mt-1 font-light">Unified tools utilized across all spatial, biodiversity, and forestry projects.</p>
                     </div>
                     <button onclick="addSoftwareTag()" class="admin-control hidden px-4 py-2 rounded-xl bg-eco-sagePrimary text-white text-xs font-semibold flex items-center gap-2 hover:bg-eco-sageHover transition shadow-sm">
                         <i class="fas fa-plus pointer-events-none"></i> Add Software
@@ -1832,6 +1842,17 @@
         // ==========================================
         // SKILLS & UNIFIED SOFTWARE LOGIC 
         // ==========================================
+        
+        function scrollSkills(direction) {
+            const container = document.getElementById('skillsContainer');
+            const card = container.querySelector('.eco-card');
+            if(card) {
+                // Calculate scroll amount based on card width + gap (1.5rem = 24px)
+                const scrollAmount = card.offsetWidth + 24; 
+                container.scrollBy({ left: scrollAmount * direction, behavior: 'smooth' });
+            }
+        }
+
         function editSpecificSkillCard(btnElement) {
             const card = btnElement.closest('.eco-card');
             const titleEl = card.querySelector('.skill-title');
