@@ -142,7 +142,7 @@
             overflow-x: auto;
             scroll-snap-type: x mandatory;
             gap: 1.5rem;
-            padding-bottom: 2.5rem;
+            padding-bottom: 0.5rem; /* Tightened padding */
             scroll-behavior: smooth;
         }
         .skills-slider-view > div {
@@ -819,7 +819,7 @@
             <div class="w-full relative px-1 sm:px-0 z-10 overflow-hidden group/slider flex items-center">
                 
                 <!-- Navigation Arrows -->
-                <button onclick="scrollSkills(-1)" class="absolute left-0 z-30 w-12 h-12 flex items-center justify-center bg-white/90 backdrop-blur-md rounded-full shadow-lg border border-gray-200 text-eco-sagePrimary hover:bg-eco-sagePrimary hover:text-white transition-all transform -translate-x-2 sm:-translate-x-4 opacity-0 group-hover/slider:opacity-100 focus:opacity-100">
+                <button onclick="scrollSkills(-1)" class="absolute left-0 z-30 w-12 h-12 flex items-center justify-center bg-white rounded-full shadow-md border border-gray-200 text-eco-sagePrimary hover:bg-eco-sagePrimary hover:text-white transition-all transform -translate-x-4 sm:-translate-x-6">
                     <i class="fas fa-chevron-left pointer-events-none"></i>
                 </button>
 
@@ -876,18 +876,18 @@
                 </div>
                 
                 <!-- Navigation Arrows -->
-                <button onclick="scrollSkills(1)" class="absolute right-0 z-30 w-12 h-12 flex items-center justify-center bg-white/90 backdrop-blur-md rounded-full shadow-lg border border-gray-200 text-eco-sagePrimary hover:bg-eco-sagePrimary hover:text-white transition-all transform translate-x-2 sm:translate-x-4 opacity-0 group-hover/slider:opacity-100 focus:opacity-100">
+                <button onclick="scrollSkills(1)" class="absolute right-0 z-30 w-12 h-12 flex items-center justify-center bg-white rounded-full shadow-md border border-gray-200 text-eco-sagePrimary hover:bg-eco-sagePrimary hover:text-white transition-all transform translate-x-4 sm:translate-x-6">
                     <i class="fas fa-chevron-right pointer-events-none"></i>
                 </button>
             </div>
             
             <!-- Pagination Dots for Slider -->
-            <div id="skillsPagination" class="flex mt-6 justify-center items-center gap-2 z-10 relative">
+            <div id="skillsPagination" class="flex mt-3 justify-center items-center gap-2 z-10 relative">
                 <!-- Dots injected via JS -->
             </div>
 
             <!-- UNIFIED SOFTWARE STACK BOX BELOW SKILLS -->
-            <div class="mt-16 eco-card p-6 sm:p-8 bg-white w-full relative group/software hover:border-eco-sageLight transition-all duration-300">
+            <div class="mt-6 eco-card p-6 sm:p-8 bg-white w-full relative group/software hover:border-eco-sageLight transition-all duration-300">
                 <div class="flex justify-between items-center mb-6">
                     <div>
                         <h3 class="font-serif text-2xl sm:text-3xl font-bold text-eco-textMain text-left">Software & Tools Stack</h3>
@@ -1074,6 +1074,7 @@
         </div>
     </section>
 
+    <!-- Footer and Contact Section -->
     <footer class="bg-eco-textMain pt-20 pb-10 relative overflow-hidden scroll-mt-16 z-10" id="contact">
         <div class="absolute top-0 right-0 w-96 h-96 bg-white/5 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/2 z-10 pointer-events-none"></div>
         <div class="absolute bottom-0 left-0 w-64 h-64 bg-eco-sagePrimary/20 rounded-full blur-[60px] translate-y-1/2 -translate-x-1/2 z-10 pointer-events-none"></div>
@@ -1179,6 +1180,7 @@
     <!-- Modal Experience Details -->
     <div id="expDetailModal" class="fixed inset-0 z-[90] hidden flex items-center justify-center bg-eco-textMain/90 backdrop-blur-md p-4 sm:p-6 transition-all duration-300 opacity-0" onclick="closeExpModal()">
         <div class="bg-white rounded-[2rem] w-full max-w-6xl max-h-[95vh] shadow-[0_30px_60px_rgba(0,0,0,0.4)] flex flex-col overflow-hidden border border-gray-100 scale-95 transition-transform duration-300 z-[91] relative" id="expModalContent" onclick="event.stopPropagation()">
+            
             <!-- Modal Header -->
             <div class="bg-eco-visionDark text-white p-6 sm:p-8 flex justify-between items-start relative shrink-0 z-[91]">
                 <button onclick="editCurrentExpDetails()" class="admin-control hidden absolute top-4 left-4 bg-white/20 hover:bg-white/40 px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-2 z-[92]">
@@ -1198,6 +1200,7 @@
                 </div>
                 <button onclick="closeExpModal()" class="bg-white/10 hover:bg-white/20 text-white w-10 h-10 rounded-full flex items-center justify-center transition-colors ml-4 shrink-0 z-[92] relative"><i class="fas fa-times text-lg pointer-events-none"></i></button>
             </div>
+            
             <!-- Modal Body (Split Content and Gallery) -->
             <div class="flex flex-col lg:flex-row flex-1 overflow-hidden bg-[#f8faf9] z-[91]">
                 <div class="w-full lg:w-1/2 p-6 sm:p-8 overflow-y-auto custom-scrollbar border-r border-gray-200/60 z-[91]">
@@ -1208,6 +1211,7 @@
                         <!-- LI items injected here -->
                     </ul>
                 </div>
+                
                 <div class="w-full lg:w-1/2 p-6 sm:p-8 flex flex-col justify-center items-center bg-white relative z-[91]">
                     <div class="admin-control hidden absolute top-4 right-4 flex gap-2 z-[93] bg-white p-1.5 rounded-xl shadow-sm border border-gray-100">
                         <button onclick="directUploadExpImage()" class="bg-eco-sagePrimary hover:bg-eco-sageHover text-white px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-2 relative" title="Add New Photo">
@@ -1217,10 +1221,13 @@
                             <i class="fas fa-trash pointer-events-none"></i> Delete
                         </button>
                     </div>
+
                     <div class="w-full aspect-[4/3] rounded-2xl overflow-hidden shadow-soft relative group bg-gray-50 border border-gray-100 z-[91]" id="modalGalleryContainer">
                         <img id="modalExpImage" src="https://upload.wikimedia.org/wikipedia/commons/c/ca/1x1.png" class="w-full h-full object-cover transition-opacity duration-300 z-[91]">
+                        
                         <button onclick="prevExpImage()" class="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white hover:bg-eco-sageLight text-eco-textMain shadow-md flex items-center justify-center transition-all z-[93] focus:outline-none hover:scale-110"><i class="fas fa-chevron-left text-sm pointer-events-none"></i></button>
                         <button onclick="nextExpImage()" class="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white hover:bg-eco-sageLight text-eco-textMain shadow-md flex items-center justify-center transition-all z-[93] focus:outline-none hover:scale-110"><i class="fas fa-chevron-right text-sm pointer-events-none"></i></button>
+                        
                         <!-- Caption (Pill Design) -->
                         <div class="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/60 backdrop-blur-sm px-4 py-1.5 rounded-full text-white text-[10px] sm:text-xs font-medium text-center shadow-lg border border-white/10 transition-opacity duration-300 z-[92]" id="modalExpImageCaption">
                             Caption
@@ -1237,6 +1244,7 @@
     <!-- MODAL: ORGANIZATION DETAILS -->
     <div id="orgDetailModal" class="fixed inset-0 z-[90] hidden flex items-center justify-center bg-eco-textMain/90 backdrop-blur-md p-4 sm:p-6 transition-all duration-300 opacity-0" onclick="closeOrgModal()">
         <div class="bg-white rounded-[2rem] w-full max-w-5xl max-h-[95vh] shadow-[0_30px_60px_rgba(0,0,0,0.4)] flex flex-col overflow-hidden border border-gray-100 scale-95 transition-transform duration-300 z-[91] relative" id="orgModalContent" onclick="event.stopPropagation()">
+            
             <!-- Top Half: Image Gallery Cover -->
             <div class="relative w-full h-64 sm:h-96 flex-shrink-0 z-[91] bg-gray-900">
                 <div class="admin-control hidden absolute top-4 right-4 flex gap-2 z-[93] bg-white/40 p-1.5 rounded-xl shadow-sm border border-white/50 backdrop-blur-md">
@@ -1247,13 +1255,22 @@
                         <i class="fas fa-trash pointer-events-none"></i> Delete
                     </button>
                 </div>
+                
                 <button onclick="closeOrgModal()" class="absolute top-4 left-4 bg-white/20 hover:bg-white/40 backdrop-blur-md text-white w-10 h-10 rounded-full flex items-center justify-center transition-colors z-[93] relative border border-white/30 shadow-sm"><i class="fas fa-times text-lg pointer-events-none drop-shadow-md"></i></button>
+
+                <!-- Gambar diatur absolute inset-0 agar benar-benar penuh -->
                 <img id="modalOrgImage" src="https://upload.wikimedia.org/wikipedia/commons/c/ca/1x1.png" class="absolute inset-0 w-full h-full object-cover opacity-100 transition-opacity duration-300">
+                
+                <!-- Gradient bawah untuk teks -->
                 <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none"></div>
+
                 <!-- Slider Arrows -->
                 <button onclick="prevOrgImage()" class="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/30 hover:bg-white/50 text-white backdrop-blur-md flex items-center justify-center transition-all z-[93] focus:outline-none hover:scale-110 border border-white/20 shadow-sm"><i class="fas fa-chevron-left text-sm pointer-events-none drop-shadow-md"></i></button>
                 <button onclick="nextOrgImage()" class="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/30 hover:bg-white/50 text-white backdrop-blur-md flex items-center justify-center transition-all z-[93] focus:outline-none hover:scale-110 border border-white/20 shadow-sm"><i class="fas fa-chevron-right text-sm pointer-events-none drop-shadow-md"></i></button>
+
+                <!-- Dots -->
                 <div class="absolute bottom-6 right-6 flex gap-2 z-[92]" id="modalOrgGalleryDots"></div>
+
                 <!-- Overlay Info -->
                 <div class="absolute bottom-6 left-6 sm:left-8 z-[92] text-white">
                     <h2 class="text-3xl sm:text-4xl font-serif font-bold text-white mb-1 drop-shadow-lg" id="modalOrgRole">Role</h2>
@@ -1265,11 +1282,13 @@
                     </p>
                 </div>
             </div>
+            
             <!-- Bottom Half: Content details -->
             <div class="p-6 sm:p-8 overflow-y-auto custom-scrollbar flex-1 bg-white relative z-[91]">
                 <button onclick="editCurrentOrgDetails()" class="admin-control hidden absolute top-6 right-6 sm:right-8 bg-gray-100 hover:bg-gray-200 text-eco-textMain px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 z-[92]">
                     <i class="fas fa-edit pointer-events-none"></i> Edit Text
                 </button>
+
                 <h3 class="font-serif text-xl sm:text-2xl font-bold text-eco-textMain mb-4 sm:mb-6 pr-24">Key Responsibilities and Impact</h3>
                 <ul class="space-y-4 text-eco-textMuted text-sm font-light leading-relaxed" id="modalOrgDescription">
                     <!-- LI items injected here -->
@@ -1281,19 +1300,23 @@
     <!-- MODAL: PROJECT DETAILS -->
     <div id="projectDetailModal" class="fixed inset-0 z-[90] hidden flex items-center justify-center bg-eco-textMain/90 backdrop-blur-md p-4 sm:p-6 transition-all duration-300 opacity-0" onclick="closeProjectModal()">
         <div class="bg-white rounded-[2rem] w-full max-w-6xl max-h-[95vh] shadow-[0_30px_60px_rgba(0,0,0,0.4)] flex flex-col overflow-hidden border border-gray-100 scale-95 transition-transform duration-300 z-[91] relative" id="projModalContent" onclick="event.stopPropagation()">
+            
             <!-- Modal Header -->
             <div class="bg-eco-textMain text-white p-6 sm:p-8 flex justify-between items-start relative shrink-0 z-[91]">
                 <button onclick="editCurrentProjDetails()" class="admin-control hidden absolute top-4 left-4 bg-white/20 hover:bg-white/40 px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-2 z-[92]">
                     <i class="fas fa-edit pointer-events-none"></i> Edit Content
                 </button>
+
                 <div class="flex-1 mt-4 sm:mt-0 flex flex-col gap-2 items-start">
                     <h2 class="text-2xl sm:text-4xl font-serif font-bold text-white leading-tight" id="modalProjTitle">Project Title</h2>
+                    
                     <span class="text-white/80 font-medium text-sm flex items-center gap-1.5 mt-1">
                         <i class="fas fa-map-marker-alt text-eco-visionAccent"></i> <span id="modalProjLocation">Location</span>
                     </span>
                 </div>
                 <button onclick="closeProjectModal()" class="bg-white/10 hover:bg-white/20 text-white w-10 h-10 rounded-full flex items-center justify-center transition-colors ml-4 shrink-0 z-[92] relative"><i class="fas fa-times text-lg pointer-events-none"></i></button>
             </div>
+            
             <!-- Modal Body -->
             <div class="flex flex-col lg:flex-row flex-1 overflow-hidden bg-[#f8faf9] z-[91]">
                 <!-- Left: Description (Bullets) & PDF Button -->
@@ -1301,9 +1324,12 @@
                     <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-eco-sageLight/50 text-eco-sageHover font-bold text-[10px] tracking-widest uppercase border border-eco-sageLight mb-6 w-max">
                         Project Overview
                     </div>
+                    
+                    <!-- Bullet Points Container -->
                     <ul class="space-y-4 text-eco-textMuted text-sm font-light leading-relaxed flex-grow" id="modalProjDescription">
                         <!-- LIs Injected here -->
                     </ul>
+
                     <div class="mt-8 pt-6 border-t border-gray-200 flex flex-col gap-3">
                         <a href="#" id="modalProjPdfLink" target="_blank" class="w-full py-3.5 rounded-xl bg-eco-sagePrimary text-white font-bold text-sm flex items-center justify-center gap-2 hover:bg-eco-sageHover transition shadow-md hidden">
                             <i class="fas fa-file-pdf"></i> View / Download Document
@@ -1315,8 +1341,10 @@
                         </button>
                     </div>
                 </div>
+                
                 <!-- Right: Image Gallery Slider -->
                 <div class="w-full lg:w-1/2 p-6 sm:p-8 flex flex-col justify-center items-center bg-white relative z-[91]">
+                    <!-- Photo Management Toolbar -->
                     <div class="admin-control hidden absolute top-4 right-4 flex gap-2 z-[93] bg-white p-1.5 rounded-xl shadow-sm border border-gray-100">
                         <button onclick="directUploadProjImage()" class="bg-eco-sagePrimary hover:bg-eco-sageHover text-white px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-2 relative" title="Add New Photo">
                             <i class="fas fa-plus pointer-events-none"></i> Add
@@ -1325,11 +1353,13 @@
                             <i class="fas fa-trash pointer-events-none"></i> Delete
                         </button>
                     </div>
+
                     <div class="w-full aspect-[4/3] rounded-2xl overflow-hidden shadow-soft relative group bg-gray-50 border border-gray-100 z-[91]" id="modalProjGalleryContainer">
                         <img id="modalProjImage" src="https://upload.wikimedia.org/wikipedia/commons/c/ca/1x1.png" class="w-full h-full object-cover transition-opacity duration-300 z-[91]">
                         
                         <button onclick="prevProjImage()" class="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white hover:bg-eco-sageLight text-eco-textMain shadow-md flex items-center justify-center transition-all z-[93] focus:outline-none hover:scale-110"><i class="fas fa-chevron-left text-sm pointer-events-none"></i></button>
                         <button onclick="nextProjImage()" class="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white hover:bg-eco-sageLight text-eco-textMain shadow-md flex items-center justify-center transition-all z-[93] focus:outline-none hover:scale-110"><i class="fas fa-chevron-right text-sm pointer-events-none"></i></button>
+
                         <div class="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/60 backdrop-blur-sm px-4 py-1.5 rounded-full text-white text-[10px] sm:text-xs font-medium text-center shadow-lg border border-white/10 transition-opacity duration-300 z-[92]" id="modalProjImageCaption">
                             Caption
                         </div>
@@ -1404,35 +1434,44 @@
         // 🔄 SISTEM LOAD DATA OTOMATIS (DENGAN CACHE)
         // ==========================================
         window.addEventListener('DOMContentLoaded', async () => {
+            
+            // 1. Cek memori browser, apakah orang ini sudah pernah buka web kita?
             const cachedData = localStorage.getItem('portfolioDataCache');
             
             if (cachedData) {
+                // Jika sudah pernah, baca data dari memori browser (0 detik!)
                 const parsedData = JSON.parse(cachedData);
-                applyDataToDOM(parsedData); 
+                applyDataToDOM(parsedData); // Langsung tampilkan foto & teks
             } else {
+                // Jika ini pertama kali buka seumur hidup, tampilkan animasi loading
                 showLoading("LOADING DATA FROM DRIVE...");
             }
 
+            // 2. Secara diam-diam (di latar belakang), cek ke Drive apakah ada update terbaru
             try {
                 let response = await fetch(SCRIPT_URL);
                 let result = await response.json();
                 
                 if (result && result.globalData) {
+                    // Simpan data terbaru dari Drive ke memori browser
                     localStorage.setItem('portfolioDataCache', JSON.stringify(result));
+                    
+                    // Segarkan tampilan web dengan data terbaru tersebut
                     applyDataToDOM(result);
                 }
             } catch (error) {
                 console.log("Error loading:", error);
             }
             
+            // Sembunyikan tombol admin jika pengunjung biasa
             if (!isAdmin) {
                 document.querySelectorAll('.admin-control').forEach(el => el.classList.add('hidden'));
             }
-            hideLoading(); 
+            hideLoading(); // Matikan animasi loading
         });
 
         // ==========================================
-        // 🛠️ FUNGSI UNTUK MENAMPILKAN DATA
+        // 🛠️ FUNGSI UNTUK MENAMPILKAN DATA (DIPISAH AGAR RAPI)
         // ==========================================
         function applyDataToDOM(result) {
             const textElements = ['heroTitleLine1', 'heroTitleLine2', 'heroDescText', 'heroTitleText', 'heroRoleText', 'aboutTitle1', 'aboutTitleHighlight', 'aboutTitle2', 'bioP1', 'bioP2', 'bioP3', 'eduUni', 'eduMajor', 'eduGpa', 'eduStatus', 'eduHs', 'eduHsMajor', 'eduHsScore', 'visionTitle', 'visionDesc', 'statExpCount', 'statProjCount', 'skillsMainTitle', 'expMainTitle', 'expSubDesc', 'orgMainTitle', 'orgSubDesc', 'projMainTitle', 'projSubDesc', 'contactTitle1', 'contactTitle2', 'contactDesc', 'contactCopyright'];
@@ -1448,7 +1487,6 @@
             if (result.globalData.hsLogo) document.getElementById('hsLogo').src = result.globalData.hsLogo;
             if (result.globalData.wallpaper) document.getElementById('home-hero').style.backgroundImage = result.globalData.wallpaper;
             if (result.globalData.skillsContainerHTML) document.getElementById('skillsContainer').innerHTML = result.globalData.skillsContainerHTML;
-            if (result.globalData.unifiedSoftwareHTML) document.getElementById('unifiedSoftwareContainer').innerHTML = result.globalData.unifiedSoftwareHTML;
             if (result.globalData.cvHref) document.getElementById('cvDownloadLink').href = result.globalData.cvHref;
 
             if (result.experiences) experiencesData = result.experiences;
@@ -1480,7 +1518,6 @@
             globalData.hsLogo = document.getElementById('hsLogo').src;
             globalData.wallpaper = document.getElementById('home-hero').style.backgroundImage;
             globalData.skillsContainerHTML = document.getElementById('skillsContainer').innerHTML;
-            globalData.unifiedSoftwareHTML = document.getElementById('unifiedSoftwareContainer').innerHTML;
             globalData.cvHref = document.getElementById('cvDownloadLink').href;
 
             const payload = {
@@ -1842,7 +1879,6 @@
         // ==========================================
         // SKILLS & UNIFIED SOFTWARE LOGIC 
         // ==========================================
-        
         function scrollSkills(direction) {
             const container = document.getElementById('skillsContainer');
             const card = container.querySelector('.eco-card');
@@ -2090,7 +2126,6 @@
         // ==========================================
         // TIMELINE EXPERIENCES LOGIC (COMPACT)
         // ==========================================
-
         let experiencesData = [
             {
                 id: 1,
@@ -2365,6 +2400,9 @@
             }
         }
 
+        // ==========================================
+        // DETAIL MODAL LOGIC (POP-UP EXPERIENCE)
+        // ==========================================
         let currentOpenExpId = null;
         let currentGalleryIndex = 0;
 
@@ -2930,7 +2968,6 @@
         // ==========================================
         // FEATURED PROJECTS LOGIC (INFINITE COVERFLOW)
         // ==========================================
-
         let projectsData = [
             {
                 id: 1,
