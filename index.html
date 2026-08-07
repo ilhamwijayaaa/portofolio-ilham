@@ -816,67 +816,70 @@
             </div>
             
             <!-- Skills Slider (Strict 3 Cards Container) -->
-            <div class="w-full relative px-1 sm:px-0 z-10 overflow-hidden group/slider flex items-center">
+            <div class="w-full relative z-10 group/slider mt-4">
                 
-                <!-- Navigation Arrows -->
-                <button onclick="scrollSkills(-1)" class="absolute left-0 z-30 w-12 h-12 flex items-center justify-center bg-white rounded-full shadow-md border border-gray-200 text-eco-sagePrimary hover:bg-eco-sagePrimary hover:text-white transition-all transform -translate-x-4 sm:-translate-x-6">
+                <!-- Navigation Arrows Left -->
+                <button onclick="scrollSkills(-1)" class="absolute -left-2 sm:-left-6 top-1/2 -translate-y-1/2 z-30 w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center bg-white rounded-full shadow-[0_5px_15px_rgba(0,0,0,0.1)] border border-gray-100 text-eco-sagePrimary hover:bg-eco-sagePrimary hover:text-white transition-all transform hover:scale-110 focus:outline-none">
                     <i class="fas fa-chevron-left pointer-events-none"></i>
                 </button>
 
-                <div class="skills-slider-view no-scrollbar w-full" id="skillsContainer">
-                    
-                    <!-- Skill 1 -->
-                    <div class="eco-card p-8 flex flex-col items-start text-left group/card bg-white relative z-10 hover:shadow-glow-sage hover:border-eco-sageLight transition-all duration-300">
-                        <button onclick="editSpecificSkillCard(this)" class="admin-control hidden absolute top-4 right-4 text-gray-300 hover:text-eco-sagePrimary opacity-0 group-hover/card:opacity-100 transition z-20"><i class="fas fa-edit pointer-events-none"></i></button>
+                <!-- Wrapper to prevent overflowing cards while showing arrows -->
+                <div class="w-full overflow-hidden px-2 py-4">
+                    <div class="skills-slider-view no-scrollbar w-full" id="skillsContainer">
                         
-                        <div class="w-14 h-14 rounded-2xl bg-eco-bg border border-gray-100 shadow-sm flex items-center justify-center text-2xl text-eco-sagePrimary mb-6 group-hover/card:scale-110 group-hover/card:bg-eco-sagePrimary group-hover/card:text-white transition-all duration-300 skill-icon-container">
-                            <i class="fas fa-map-marked-alt pointer-events-none"></i>
+                        <!-- Skill 1 -->
+                        <div class="eco-card p-8 flex flex-col items-start text-left group/card bg-white relative z-10 hover:shadow-glow-sage hover:border-eco-sageLight transition-all duration-300">
+                            <button onclick="editSpecificSkillCard(this)" class="admin-control hidden absolute top-4 right-4 text-gray-300 hover:text-eco-sagePrimary opacity-0 group-hover/card:opacity-100 transition z-20"><i class="fas fa-edit pointer-events-none"></i></button>
+                            
+                            <div class="w-14 h-14 rounded-2xl bg-eco-bg border border-gray-100 shadow-sm flex items-center justify-center text-2xl text-eco-sagePrimary mb-6 group-hover/card:scale-110 group-hover/card:bg-eco-sagePrimary group-hover/card:text-white transition-all duration-300 skill-icon-container">
+                                <i class="fas fa-map-marked-alt pointer-events-none"></i>
+                            </div>
+                            
+                            <h3 class="font-serif text-xl font-bold text-eco-textMain mb-3 skill-title z-10">Spatial Analysis</h3>
+                            <p class="text-eco-textMuted text-sm mb-2 flex-grow font-light leading-relaxed skill-desc z-10">Land-use classification, habitat suitability modeling, shoreline dynamics, hydrological modeling, drone photogrammetry, and spatial data analysis.</p>
                         </div>
-                        
-                        <h3 class="font-serif text-xl font-bold text-eco-textMain mb-3 skill-title z-10">Spatial Analysis</h3>
-                        <p class="text-eco-textMuted text-sm mb-2 flex-grow font-light leading-relaxed skill-desc z-10">Land-use classification, habitat suitability modeling, shoreline dynamics, hydrological modeling, drone photogrammetry, and spatial data analysis.</p>
-                    </div>
 
-                    <!-- Skill 2 -->
-                    <div class="eco-card p-8 flex flex-col items-start text-left group/card bg-white relative z-10 hover:shadow-glow-sage hover:border-eco-sageLight transition-all duration-300">
-                        <button onclick="editSpecificSkillCard(this)" class="admin-control hidden absolute top-4 right-4 text-gray-300 hover:text-eco-sagePrimary opacity-0 group-hover/card:opacity-100 transition z-20"><i class="fas fa-edit pointer-events-none"></i></button>
+                        <!-- Skill 2 -->
+                        <div class="eco-card p-8 flex flex-col items-start text-left group/card bg-white relative z-10 hover:shadow-glow-sage hover:border-eco-sageLight transition-all duration-300">
+                            <button onclick="editSpecificSkillCard(this)" class="admin-control hidden absolute top-4 right-4 text-gray-300 hover:text-eco-sagePrimary opacity-0 group-hover/card:opacity-100 transition z-20"><i class="fas fa-edit pointer-events-none"></i></button>
 
-                        <div class="w-14 h-14 rounded-2xl bg-eco-bg border border-gray-100 shadow-sm flex items-center justify-center text-2xl text-eco-sagePrimary mb-6 group-hover/card:scale-110 group-hover/card:bg-eco-sagePrimary group-hover/card:text-white transition-all duration-300 skill-icon-container">
-                            <i class="fas fa-frog pointer-events-none"></i>
+                            <div class="w-14 h-14 rounded-2xl bg-eco-bg border border-gray-100 shadow-sm flex items-center justify-center text-2xl text-eco-sagePrimary mb-6 group-hover/card:scale-110 group-hover/card:bg-eco-sagePrimary group-hover/card:text-white transition-all duration-300 skill-icon-container">
+                                <i class="fas fa-frog pointer-events-none"></i>
+                            </div>
+                            
+                            <h3 class="font-serif text-xl font-bold text-eco-textMain mb-3 skill-title z-10">Biodiversity & Ecology</h3>
+                            <p class="text-eco-textMuted text-sm mb-2 flex-grow font-light leading-relaxed skill-desc z-10">Wildlife observation, habitat suitability modeling, biodiversity monitoring, and ecological inventory.</p>
                         </div>
-                        
-                        <h3 class="font-serif text-xl font-bold text-eco-textMain mb-3 skill-title z-10">Biodiversity & Ecology</h3>
-                        <p class="text-eco-textMuted text-sm mb-2 flex-grow font-light leading-relaxed skill-desc z-10">Wildlife observation, habitat suitability modeling, biodiversity monitoring, and ecological inventory.</p>
-                    </div>
 
-                    <!-- Skill 3 -->
-                    <div class="eco-card p-8 flex flex-col items-start text-left group/card bg-white relative z-10 hover:shadow-glow-sage hover:border-eco-sageLight transition-all duration-300">
-                        <button onclick="editSpecificSkillCard(this)" class="admin-control hidden absolute top-4 right-4 text-gray-300 hover:text-eco-sagePrimary opacity-0 group-hover/card:opacity-100 transition z-20"><i class="fas fa-edit pointer-events-none"></i></button>
+                        <!-- Skill 3 -->
+                        <div class="eco-card p-8 flex flex-col items-start text-left group/card bg-white relative z-10 hover:shadow-glow-sage hover:border-eco-sageLight transition-all duration-300">
+                            <button onclick="editSpecificSkillCard(this)" class="admin-control hidden absolute top-4 right-4 text-gray-300 hover:text-eco-sagePrimary opacity-0 group-hover/card:opacity-100 transition z-20"><i class="fas fa-edit pointer-events-none"></i></button>
 
-                        <div class="w-14 h-14 rounded-2xl bg-eco-bg border border-gray-100 shadow-sm flex items-center justify-center text-2xl text-eco-sagePrimary mb-6 group-hover/card:scale-110 group-hover/card:bg-eco-sagePrimary group-hover/card:text-white transition-all duration-300 skill-icon-container">
-                            <i class="fas fa-seedling pointer-events-none"></i>
+                            <div class="w-14 h-14 rounded-2xl bg-eco-bg border border-gray-100 shadow-sm flex items-center justify-center text-2xl text-eco-sagePrimary mb-6 group-hover/card:scale-110 group-hover/card:bg-eco-sagePrimary group-hover/card:text-white transition-all duration-300 skill-icon-container">
+                                <i class="fas fa-seedling pointer-events-none"></i>
+                            </div>
+                            
+                            <h3 class="font-serif text-xl font-bold text-eco-textMain mb-3 skill-title z-10">Land Rehabilitation</h3>
+                            <p class="text-eco-textMuted text-sm mb-2 flex-grow font-light leading-relaxed skill-desc z-10">Post-mining reclamation assessment, regulatory compliance, soil analysis, and nature-based solutions.</p>
                         </div>
-                        
-                        <h3 class="font-serif text-xl font-bold text-eco-textMain mb-3 skill-title z-10">Land Rehabilitation</h3>
-                        <p class="text-eco-textMuted text-sm mb-2 flex-grow font-light leading-relaxed skill-desc z-10">Post-mining reclamation assessment, regulatory compliance, soil analysis, and nature-based solutions.</p>
-                    </div>
 
-                    <!-- Skill 4 -->
-                    <div class="eco-card p-8 flex flex-col items-start text-left group/card bg-white relative z-10 hover:shadow-glow-sage hover:border-eco-sageLight transition-all duration-300">
-                        <button onclick="editSpecificSkillCard(this)" class="admin-control hidden absolute top-4 right-4 text-gray-300 hover:text-eco-sagePrimary opacity-0 group-hover/card:opacity-100 transition z-20"><i class="fas fa-edit pointer-events-none"></i></button>
-                        <button onclick="deleteSkillCard(this)" class="admin-control hidden absolute top-4 right-10 text-gray-300 hover:text-red-500 opacity-0 group-hover/card:opacity-100 transition z-20"><i class="fas fa-trash pointer-events-none"></i></button>
+                        <!-- Skill 4 -->
+                        <div class="eco-card p-8 flex flex-col items-start text-left group/card bg-white relative z-10 hover:shadow-glow-sage hover:border-eco-sageLight transition-all duration-300">
+                            <button onclick="editSpecificSkillCard(this)" class="admin-control hidden absolute top-4 right-4 text-gray-300 hover:text-eco-sagePrimary opacity-0 group-hover/card:opacity-100 transition z-20"><i class="fas fa-edit pointer-events-none"></i></button>
+                            <button onclick="deleteSkillCard(this)" class="admin-control hidden absolute top-4 right-10 text-gray-300 hover:text-red-500 opacity-0 group-hover/card:opacity-100 transition z-20"><i class="fas fa-trash pointer-events-none"></i></button>
 
-                        <div class="w-14 h-14 rounded-2xl bg-eco-bg border border-gray-100 shadow-sm flex items-center justify-center text-2xl text-eco-sagePrimary mb-6 group-hover/card:scale-110 group-hover/card:bg-eco-sagePrimary group-hover/card:text-white transition-all duration-300 skill-icon-container">
-                            <i class="fas fa-tree pointer-events-none"></i>
+                            <div class="w-14 h-14 rounded-2xl bg-eco-bg border border-gray-100 shadow-sm flex items-center justify-center text-2xl text-eco-sagePrimary mb-6 group-hover/card:scale-110 group-hover/card:bg-eco-sagePrimary group-hover/card:text-white transition-all duration-300 skill-icon-container">
+                                <i class="fas fa-tree pointer-events-none"></i>
+                            </div>
+                            
+                            <h3 class="font-serif text-xl font-bold text-eco-textMain mb-3 skill-title z-10">Forestry & Ecological Analysis</h3>
+                            <p class="text-eco-textMuted text-sm mb-2 flex-grow font-light leading-relaxed skill-desc z-10">Carbon assessment, vegetation analysis, ecotourism evaluation, and forest policy compliance.</p>
                         </div>
-                        
-                        <h3 class="font-serif text-xl font-bold text-eco-textMain mb-3 skill-title z-10">Forestry & Ecological Analysis</h3>
-                        <p class="text-eco-textMuted text-sm mb-2 flex-grow font-light leading-relaxed skill-desc z-10">Carbon assessment, vegetation analysis, ecotourism evaluation, and forest policy compliance.</p>
                     </div>
                 </div>
                 
-                <!-- Navigation Arrows -->
-                <button onclick="scrollSkills(1)" class="absolute right-0 z-30 w-12 h-12 flex items-center justify-center bg-white rounded-full shadow-md border border-gray-200 text-eco-sagePrimary hover:bg-eco-sagePrimary hover:text-white transition-all transform translate-x-4 sm:translate-x-6">
+                <!-- Navigation Arrows Right -->
+                <button onclick="scrollSkills(1)" class="absolute -right-2 sm:-right-6 top-1/2 -translate-y-1/2 z-30 w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center bg-white rounded-full shadow-[0_5px_15px_rgba(0,0,0,0.1)] border border-gray-100 text-eco-sagePrimary hover:bg-eco-sagePrimary hover:text-white transition-all transform hover:scale-110 focus:outline-none">
                     <i class="fas fa-chevron-right pointer-events-none"></i>
                 </button>
             </div>
