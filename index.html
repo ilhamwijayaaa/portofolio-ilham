@@ -1607,8 +1607,9 @@
                 const response = await sendDataToBackend(payload);
                 hideLoading();
                 if (response && response.id) {
-                    // Mengembalikan URL Drive standar yang dapat dibaca tag <img>
-                    return `https://drive.google.com/uc?id=${response.id}`;
+                    // MENGGUNAKAN THUMBNAIL URL AGAR BISA TAMPIL DI WEB
+                    // Parameter sz=w1920 memastikan resolusinya tetap besar dan jernih
+                    return `https://drive.google.com/thumbnail?id=${response.id}&sz=w1920`;
                 }
                 return null;
             } catch (e) {
