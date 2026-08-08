@@ -898,10 +898,13 @@
             </div>
 
             <!-- UNIFIED SOFTWARE STACK BOX BELOW SKILLS -->
-            <div class="mt-6 eco-card p-6 sm:p-8 bg-white w-full relative group/software hover:border-eco-sageLight transition-all duration-300">
-                <div class="flex justify-between items-center mb-6">
-                    <div>
-                        <h3 class="font-serif text-2xl sm:text-3xl font-bold text-eco-textMain text-left">Software & Tools Stack</h3>
+            <div class="mt-6 eco-card p-6 sm:p-8 bg-white w-full relative hover:border-eco-sageLight transition-all duration-300">
+                <div class="flex justify-between items-center mb-6 relative group/stack">
+                    <div class="relative inline-block text-left">
+                        <h3 class="font-serif text-2xl sm:text-3xl font-bold text-eco-textMain" id="softwareStackTitle">Software & Tools Stack</h3>
+                        <button onclick="editSoftwareStackTitle()" class="admin-control hidden absolute -right-8 top-1/2 -translate-y-1/2 text-eco-sagePrimary hover:text-eco-sageHover transition opacity-0 group-hover/stack:opacity-100 z-20">
+                            <i class="fas fa-edit pointer-events-none"></i>
+                        </button>
                     </div>
                     <button onclick="addSoftwareTag()" class="admin-control hidden px-4 py-2 rounded-xl bg-eco-sagePrimary text-white text-xs font-semibold flex items-center gap-2 hover:bg-eco-sageHover transition shadow-sm">
                         <i class="fas fa-plus pointer-events-none"></i> Add Software
@@ -1485,7 +1488,7 @@
         // 🛠️ FUNGSI UNTUK MENAMPILKAN DATA (DIPISAH AGAR RAPI)
         // ==========================================
         function applyDataToDOM(result) {
-            const textElements = ['heroTitleLine1', 'heroTitleLine2', 'heroDescText', 'heroTitleText', 'heroRoleText', 'aboutTitle1', 'aboutTitleHighlight', 'aboutTitle2', 'bioP1', 'bioP2', 'bioP3', 'eduUni', 'eduMajor', 'eduGpa', 'eduStatus', 'eduHs', 'eduHsMajor', 'eduHsScore', 'visionTitle', 'visionDesc', 'statExpCount', 'statProjCount', 'skillsMainTitle', 'expMainTitle', 'expSubDesc', 'orgMainTitle', 'orgSubDesc', 'projMainTitle', 'projSubDesc', 'contactTitle1', 'contactTitle2', 'contactDesc', 'contactCopyright'];
+            const textElements = ['heroTitleLine1', 'heroTitleLine2', 'heroDescText', 'heroTitleText', 'heroRoleText', 'aboutTitle1', 'aboutTitleHighlight', 'aboutTitle2', 'bioP1', 'bioP2', 'bioP3', 'eduUni', 'eduMajor', 'eduGpa', 'eduStatus', 'eduHs', 'eduHsMajor', 'eduHsScore', 'visionTitle', 'visionDesc', 'statExpCount', 'statProjCount', 'skillsMainTitle', 'softwareStackTitle', 'expMainTitle', 'expSubDesc', 'orgMainTitle', 'orgSubDesc', 'projMainTitle', 'projSubDesc', 'contactTitle1', 'contactTitle2', 'contactDesc', 'contactCopyright'];
             
             textElements.forEach(id => {
                 if (result.globalData[id] && document.getElementById(id)) {
@@ -1530,7 +1533,7 @@
             if (!silent) showLoading("SAVING TO DRIVE...");
             
             let globalData = {};
-            const textElements = ['heroTitleLine1', 'heroTitleLine2', 'heroDescText', 'heroTitleText', 'heroRoleText', 'aboutTitle1', 'aboutTitleHighlight', 'aboutTitle2', 'bioP1', 'bioP2', 'bioP3', 'eduUni', 'eduMajor', 'eduGpa', 'eduStatus', 'eduHs', 'eduHsMajor', 'eduHsScore', 'visionTitle', 'visionDesc', 'statExpCount', 'statProjCount', 'skillsMainTitle', 'expMainTitle', 'expSubDesc', 'orgMainTitle', 'orgSubDesc', 'projMainTitle', 'projSubDesc', 'contactTitle1', 'contactTitle2', 'contactDesc', 'contactCopyright'];
+            const textElements = ['heroTitleLine1', 'heroTitleLine2', 'heroDescText', 'heroTitleText', 'heroRoleText', 'aboutTitle1', 'aboutTitleHighlight', 'aboutTitle2', 'bioP1', 'bioP2', 'bioP3', 'eduUni', 'eduMajor', 'eduGpa', 'eduStatus', 'eduHs', 'eduHsMajor', 'eduHsScore', 'visionTitle', 'visionDesc', 'statExpCount', 'statProjCount', 'skillsMainTitle', 'softwareStackTitle', 'expMainTitle', 'expSubDesc', 'orgMainTitle', 'orgSubDesc', 'projMainTitle', 'projSubDesc', 'contactTitle1', 'contactTitle2', 'contactDesc', 'contactCopyright'];
             
             textElements.forEach(id => {
                 let el = document.getElementById(id);
@@ -1896,6 +1899,17 @@
             ], (data) => {
                 if(data.skTitle) {
                     title.innerText = data.skTitle;
+                }
+            });
+        }
+
+        function editSoftwareStackTitle() {
+            const title = document.getElementById('softwareStackTitle');
+            openCustomEditModal('Edit Software Stack Title', [
+                { id: 'ssTitle', label: 'Judul Software Stack', type: 'text', value: title.innerText },
+            ], (data) => {
+                if(data.ssTitle) {
+                    title.innerText = data.ssTitle;
                 }
             });
         }
