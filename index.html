@@ -1524,7 +1524,20 @@
             }
 
             if (result.globalData.unifiedSoftwareContainerHTML) {
-                document.getElementById('unifiedSoftwareContainer').innerHTML = result.globalData.unifiedSoftwareContainerHTML;
+                // Ensure buttons have the hidden class unless admin mode is active
+                const containerHTML = result.globalData.unifiedSoftwareContainerHTML;
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = containerHTML;
+                
+                tempDiv.querySelectorAll('.admin-control').forEach(el => {
+                     if(!isAdmin) {
+                         el.classList.add('hidden');
+                     } else {
+                         el.classList.remove('hidden');
+                     }
+                });
+                
+                document.getElementById('unifiedSoftwareContainer').innerHTML = tempDiv.innerHTML;
             }
             
             if (result.globalData.cvHref) document.getElementById('cvDownloadLink').href = result.globalData.cvHref;
@@ -1561,7 +1574,13 @@
             
             // Critical fix: We must save the *exact* HTML string of the bottom software box
             const unifiedContainerElement = document.getElementById('unifiedSoftwareContainer');
-            globalData.unifiedSoftwareContainerHTML = unifiedContainerElement ? unifiedContainerElement.innerHTML : "";
+            // Clone to avoid modifying the active DOM
+            const clonedContainer = unifiedContainerElement.cloneNode(true);
+            
+            // Ensure delete buttons are preserved but hidden so they don't show up for non-admins
+            clonedContainer.querySelectorAll('.admin-control').forEach(el => el.classList.add('hidden'));
+
+            globalData.unifiedSoftwareContainerHTML = clonedContainer ? clonedContainer.innerHTML : "";
 
             globalData.cvHref = document.getElementById('cvDownloadLink').href;
 
@@ -2290,7 +2309,7 @@
                     "Provided tutoring to 14 assistants regarding ecology practical materials.",
                     "<highlight>Gunung Papandayan Avifauna Study PIC:</highlight> Conducted location surveys and determined ecological observation points.",
                     "Led 80+ students in bird ecology field data collection and data processing.",
-                    "Provided tutorials on avifauna diversity analysis and feeding guilds to practicum students."
+                    "Provided tutorials on avifauna diversity analysis and feeding guilds to practicum inner students."
                 ], 
                 images: ["https://images.unsplash.com/photo-1473448912268-2022ce9509d8?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"], 
                 captions: ["Forest Ecology Field Study"] 
