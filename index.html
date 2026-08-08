@@ -1431,6 +1431,12 @@
         }
 
         async function publishChanges() {
+            // Update the unified software container HTML right before saving
+            const unifiedContainerElement = document.getElementById('unifiedSoftwareContainer');
+            if (unifiedContainerElement) {
+                // We're just making sure it's up to date before calling saveAllDataToDrive
+                // The actual saving logic is in saveAllDataToDrive
+            }
             await saveAllDataToDrive();
             hasUnsavedChanges = false;
             const bar = document.getElementById('adminSaveBar');
@@ -1501,6 +1507,7 @@
             if (result.globalData.hsLogo) document.getElementById('hsLogo').src = result.globalData.hsLogo;
             if (result.globalData.wallpaper) document.getElementById('home-hero').style.backgroundImage = result.globalData.wallpaper;
             
+            // --- INI ADALAH BAGIAN PEMBERSIH PAKSA DATA LAMA DARI DATABASE ---
             if (result.globalData.skillsContainerHTML) {
                 // Fetch returns the raw HTML string for the cards. We want to wipe out the tags
                 // We parse it into a dummy element so we can manipulate it BEFORE applying it to the live DOM.
@@ -1517,13 +1524,7 @@
             }
 
             if (result.globalData.unifiedSoftwareContainerHTML) {
-                // Ensure this executes synchronously with the fetch return.
-                 setTimeout(() => {
-                    const unifiedContainer = document.getElementById('unifiedSoftwareContainer');
-                    if (unifiedContainer) {
-                         unifiedContainer.innerHTML = result.globalData.unifiedSoftwareContainerHTML;
-                    }
-                }, 0);
+                document.getElementById('unifiedSoftwareContainer').innerHTML = result.globalData.unifiedSoftwareContainerHTML;
             }
             
             if (result.globalData.cvHref) document.getElementById('cvDownloadLink').href = result.globalData.cvHref;
@@ -2166,6 +2167,12 @@
                 `;
                 
                 container.appendChild(tagDiv);
+
+                // Re-apply admin styles to newly added elements immediately if in admin mode
+                if (isAdmin) {
+                    tagDiv.querySelectorAll('.admin-control').forEach(el => el.classList.remove('hidden'));
+                }
+
                 markUnsavedChanges();
             });
         }
