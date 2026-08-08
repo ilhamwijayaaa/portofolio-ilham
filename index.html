@@ -583,7 +583,6 @@
         <input type="file" id="cvUploadInput" accept=".pdf,.doc,.docx">
         <input type="file" id="uniLogoUploadInput" accept="image/*">
         <input type="file" id="hsLogoUploadInput" accept="image/*">
-        <input type="file" id="partnerLogoUploadInput" accept="image/*">
         <input type="file" id="tagImageUploadInput" accept="image/*">
         <input type="file" id="expGalleryUploadInput" accept="image/*">
         <input type="file" id="instLogoUploadInput" accept="image/*">
@@ -1431,11 +1430,16 @@
         }
 
         async function publishChanges() {
-            // Update the unified software container HTML right before saving
             const unifiedContainerElement = document.getElementById('unifiedSoftwareContainer');
             if (unifiedContainerElement) {
-                // We're just making sure it's up to date before calling saveAllDataToDrive
-                // The actual saving logic is in saveAllDataToDrive
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = unifiedContainerElement.innerHTML;
+                const adminControls = tempDiv.querySelectorAll('.admin-control');
+                adminControls.forEach(el => el.classList.add('hidden'));
+                unifiedContainerElement.innerHTML = tempDiv.innerHTML;
+                if (isAdmin) {
+                    unifiedContainerElement.querySelectorAll('.admin-control').forEach(el => el.classList.remove('hidden'));
+                }
             }
             await saveAllDataToDrive();
             hasUnsavedChanges = false;
@@ -1454,40 +1458,31 @@
         // 🔄 SISTEM LOAD DATA OTOMATIS (DENGAN CACHE)
         // ==========================================
         window.addEventListener('DOMContentLoaded', async () => {
-            
-            // 1. Cek memori browser, apakah orang ini sudah pernah buka web kita?
             const cachedData = localStorage.getItem('portfolioDataCache');
             
             if (cachedData) {
-                // Jika sudah pernah, baca data dari memori browser (0 detik!)
                 const parsedData = JSON.parse(cachedData);
-                applyDataToDOM(parsedData); // Langsung tampilkan foto & teks
+                applyDataToDOM(parsedData); 
             } else {
-                // Jika ini pertama kali buka seumur hidup, tampilkan animasi loading
                 showLoading("LOADING DATA FROM DRIVE...");
             }
 
-            // 2. Secara diam-diam (di latar belakang), cek ke Drive apakah ada update terbaru
             try {
                 let response = await fetch(SCRIPT_URL);
                 let result = await response.json();
                 
                 if (result && result.globalData) {
-                    // Simpan data terbaru dari Drive ke memori browser
                     localStorage.setItem('portfolioDataCache', JSON.stringify(result));
-                    
-                    // Segarkan tampilan web dengan data terbaru tersebut
                     applyDataToDOM(result);
                 }
             } catch (error) {
                 console.log("Error loading:", error);
             }
             
-            // Sembunyikan tombol admin jika pengunjung biasa
             if (!isAdmin) {
                 document.querySelectorAll('.admin-control').forEach(el => el.classList.add('hidden'));
             }
-            hideLoading(); // Matikan animasi loading
+            hideLoading(); 
         });
 
         // ==========================================
@@ -1507,36 +1502,22 @@
             if (result.globalData.hsLogo) document.getElementById('hsLogo').src = result.globalData.hsLogo;
             if (result.globalData.wallpaper) document.getElementById('home-hero').style.backgroundImage = result.globalData.wallpaper;
             
-            // --- INI ADALAH BAGIAN PEMBERSIH PAKSA DATA LAMA DARI DATABASE ---
             if (result.globalData.skillsContainerHTML) {
-                // Fetch returns the raw HTML string for the cards. We want to wipe out the tags
-                // We parse it into a dummy element so we can manipulate it BEFORE applying it to the live DOM.
                 const tempDiv = document.createElement('div');
                 tempDiv.innerHTML = result.globalData.skillsContainerHTML;
-                
-                // Now, clean up all the software tag containers inside the cards
                 const tagsToErase = tempDiv.querySelectorAll('.eco-card div.flex.flex-wrap, .eco-card div[class*="flex-wrap"], .eco-card div[class*="gap-2"], .eco-card .border-t');
-                
                 tagsToErase.forEach(el => el.remove());
-                
-                // Assign the CLEANED HTML to the live DOM
                 document.getElementById('skillsContainer').innerHTML = tempDiv.innerHTML;
             }
 
             if (result.globalData.unifiedSoftwareContainerHTML) {
-                // Ensure buttons have the hidden class unless admin mode is active
-                const containerHTML = result.globalData.unifiedSoftwareContainerHTML;
                 const tempDiv = document.createElement('div');
-                tempDiv.innerHTML = containerHTML;
-                
-                tempDiv.querySelectorAll('.admin-control').forEach(el => {
-                     if(!isAdmin) {
-                         el.classList.add('hidden');
-                     } else {
-                         el.classList.remove('hidden');
-                     }
-                });
-                
+                tempDiv.innerHTML = result.globalData.unifiedSoftwareContainerHTML;
+                if (isAdmin) {
+                    tempDiv.querySelectorAll('.admin-control').forEach(el => el.classList.remove('hidden'));
+                } else {
+                    tempDiv.querySelectorAll('.admin-control').forEach(el => el.classList.add('hidden'));
+                }
                 document.getElementById('unifiedSoftwareContainer').innerHTML = tempDiv.innerHTML;
             }
             
@@ -1572,15 +1553,16 @@
             globalData.wallpaper = document.getElementById('home-hero').style.backgroundImage;
             globalData.skillsContainerHTML = document.getElementById('skillsContainer').innerHTML;
             
-            // Critical fix: We must save the *exact* HTML string of the bottom software box
             const unifiedContainerElement = document.getElementById('unifiedSoftwareContainer');
-            // Clone to avoid modifying the active DOM
-            const clonedContainer = unifiedContainerElement.cloneNode(true);
-            
-            // Ensure delete buttons are preserved but hidden so they don't show up for non-admins
-            clonedContainer.querySelectorAll('.admin-control').forEach(el => el.classList.add('hidden'));
-
-            globalData.unifiedSoftwareContainerHTML = clonedContainer ? clonedContainer.innerHTML : "";
+            if (unifiedContainerElement) {
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = unifiedContainerElement.innerHTML;
+                const adminControls = tempDiv.querySelectorAll('.admin-control');
+                adminControls.forEach(el => el.classList.add('hidden'));
+                globalData.unifiedSoftwareContainerHTML = tempDiv.innerHTML;
+            } else {
+                globalData.unifiedSoftwareContainerHTML = "";
+            }
 
             globalData.cvHref = document.getElementById('cvDownloadLink').href;
 
@@ -1607,6 +1589,32 @@
                 div.innerHTML = '<i class="fas fa-check"></i> ALL CHANGES SAVED!';
                 document.body.appendChild(div);
                 setTimeout(() => div.remove(), 3000);
+            }
+        }
+
+        // ==========================================
+        // 🔄 SISTEM UPLOAD GAMBAR KE DRIVE (FUNGSI UTAMA BARU)
+        // ==========================================
+        async function uploadImageToDriveAndGetUrl(file, base64Data) {
+            showLoading("UPLOADING IMAGE TO DRIVE...");
+            try {
+                const payload = {
+                    action: "uploadImage",
+                    filename: file.name || "uploaded_image.png",
+                    mimeType: file.type || "image/png",
+                    base64Data: base64Data
+                };
+                const response = await sendDataToBackend(payload);
+                hideLoading();
+                if (response && response.id) {
+                    // Mengembalikan URL Drive standar yang dapat dibaca tag <img>
+                    return `https://drive.google.com/uc?id=${response.id}`;
+                }
+                return null;
+            } catch (e) {
+                hideLoading();
+                alert("Upload failed: " + e.message);
+                return null;
             }
         }
 
@@ -1958,7 +1966,6 @@
             const container = document.getElementById('skillsContainer');
             const card = container.querySelector('.eco-card');
             if(card) {
-                // Calculate scroll amount based on card width + gap (1.5rem = 24px)
                 const scrollAmount = card.offsetWidth + 24; 
                 container.scrollBy({ left: scrollAmount * direction, behavior: 'smooth' });
             }
@@ -2133,9 +2140,12 @@
             const file = e.target.files[0];
             if (file && currentTagToEdit) {
                 const reader = new FileReader();
-                reader.onload = function(event) {
-                    currentTagToEdit.src = event.target.result;
-                    markUnsavedChanges();
+                reader.onload = async function(event) {
+                    const url = await uploadImageToDriveAndGetUrl(file, event.target.result);
+                    if (url) {
+                        currentTagToEdit.src = url;
+                        markUnsavedChanges();
+                    }
                 };
                 reader.readAsDataURL(file);
             }
@@ -2187,7 +2197,6 @@
                 
                 container.appendChild(tagDiv);
 
-                // Re-apply admin styles to newly added elements immediately if in admin mode
                 if (isAdmin) {
                     tagDiv.querySelectorAll('.admin-control').forEach(el => el.classList.remove('hidden'));
                 }
@@ -2309,7 +2318,7 @@
                     "Provided tutoring to 14 assistants regarding ecology practical materials.",
                     "<highlight>Gunung Papandayan Avifauna Study PIC:</highlight> Conducted location surveys and determined ecological observation points.",
                     "Led 80+ students in bird ecology field data collection and data processing.",
-                    "Provided tutorials on avifauna diversity analysis and feeding guilds to practicum inner students."
+                    "Provided tutorials on avifauna diversity analysis and feeding guilds to practicum students."
                 ], 
                 images: ["https://images.unsplash.com/photo-1473448912268-2022ce9509d8?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"], 
                 captions: ["Forest Ecology Field Study"] 
@@ -2396,18 +2405,21 @@
             const file = e.target.files[0];
             if (file && currentExpIdForLogo) {
                 const reader = new FileReader();
-                reader.onload = function(event) {
-                    const expIndex = experiencesData.findIndex(ex => ex.id === currentExpIdForLogo);
-                    if(expIndex !== -1) {
-                        experiencesData[expIndex].instLogo = event.target.result;
-                        renderTimeline(); 
-                        markUnsavedChanges();
-                        
-                        if (currentOpenExpId === currentExpIdForLogo) {
-                            const modalLogoEl = document.getElementById('modalExpLogo');
-                            modalLogoEl.src = event.target.result;
-                            modalLogoEl.style.display = 'block';
-                            if(document.getElementById('modalDefaultIcon')) document.getElementById('modalDefaultIcon').style.display = 'none';
+                reader.onload = async function(event) {
+                    const url = await uploadImageToDriveAndGetUrl(file, event.target.result);
+                    if(url) {
+                        const expIndex = experiencesData.findIndex(ex => ex.id === currentExpIdForLogo);
+                        if(expIndex !== -1) {
+                            experiencesData[expIndex].instLogo = url;
+                            renderTimeline(); 
+                            markUnsavedChanges();
+                            
+                            if (currentOpenExpId === currentExpIdForLogo) {
+                                const modalLogoEl = document.getElementById('modalExpLogo');
+                                modalLogoEl.src = url;
+                                modalLogoEl.style.display = 'block';
+                                if(document.getElementById('modalDefaultIcon')) document.getElementById('modalDefaultIcon').style.display = 'none';
+                            }
                         }
                     }
                 };
@@ -2664,16 +2676,19 @@
             const file = e.target.files[0];
             if (file && currentOpenExpId) {
                 const reader = new FileReader();
-                reader.onload = function(event) {
-                    const expIndex = experiencesData.findIndex(ex => ex.id === currentOpenExpId);
-                    const caption = prompt("Masukkan caption untuk foto ini:");
-                    
-                    experiencesData[expIndex].images.push(event.target.result);
-                    experiencesData[expIndex].captions.push(caption || '');
-                    
-                    currentGalleryIndex = experiencesData[expIndex].images.length - 1; 
-                    updateGalleryView();
-                    markUnsavedChanges();
+                reader.onload = async function(event) {
+                    const url = await uploadImageToDriveAndGetUrl(file, event.target.result);
+                    if(url) {
+                        const expIndex = experiencesData.findIndex(ex => ex.id === currentOpenExpId);
+                        const caption = prompt("Masukkan caption untuk foto ini:");
+                        
+                        experiencesData[expIndex].images.push(url);
+                        experiencesData[expIndex].captions.push(caption || '');
+                        
+                        currentGalleryIndex = experiencesData[expIndex].images.length - 1; 
+                        updateGalleryView();
+                        markUnsavedChanges();
+                    }
                 };
                 reader.readAsDataURL(file);
             }
@@ -2792,18 +2807,21 @@
             const file = e.target.files[0];
             if (file && currentOrgIdForBg) {
                 const reader = new FileReader();
-                reader.onload = function(event) {
-                    const orgIndex = organizationsData.findIndex(o => o.id === currentOrgIdForBg);
-                    if(orgIndex !== -1) {
-                        organizationsData[orgIndex].bgImage = event.target.result;
-                        if (!organizationsData[orgIndex].images) organizationsData[orgIndex].images = [];
-                        if (organizationsData[orgIndex].images.length === 0) {
-                            organizationsData[orgIndex].images.push(event.target.result);
-                        } else {
-                            organizationsData[orgIndex].images[0] = event.target.result; 
+                reader.onload = async function(event) {
+                    const url = await uploadImageToDriveAndGetUrl(file, event.target.result);
+                    if(url) {
+                        const orgIndex = organizationsData.findIndex(o => o.id === currentOrgIdForBg);
+                        if(orgIndex !== -1) {
+                            organizationsData[orgIndex].bgImage = url;
+                            if (!organizationsData[orgIndex].images) organizationsData[orgIndex].images = [];
+                            if (organizationsData[orgIndex].images.length === 0) {
+                                organizationsData[orgIndex].images.push(url);
+                            } else {
+                                organizationsData[orgIndex].images[0] = url; 
+                            }
+                            renderOrganizations();
+                            markUnsavedChanges();
                         }
-                        renderOrganizations();
-                        markUnsavedChanges();
                     }
                 };
                 reader.readAsDataURL(file);
@@ -3032,12 +3050,15 @@
             const file = e.target.files[0];
             if (file && currentOpenOrgId) {
                 const reader = new FileReader();
-                reader.onload = function(event) {
-                    const orgIndex = organizationsData.findIndex(o => o.id === currentOpenOrgId);
-                    organizationsData[orgIndex].images.push(event.target.result);
-                    currentOrgGalleryIndex = organizationsData[orgIndex].images.length - 1; 
-                    updateOrgGalleryView();
-                    markUnsavedChanges();
+                reader.onload = async function(event) {
+                    const url = await uploadImageToDriveAndGetUrl(file, event.target.result);
+                    if(url) {
+                        const orgIndex = organizationsData.findIndex(o => o.id === currentOpenOrgId);
+                        organizationsData[orgIndex].images.push(url);
+                        currentOrgGalleryIndex = organizationsData[orgIndex].images.length - 1; 
+                        updateOrgGalleryView();
+                        markUnsavedChanges();
+                    }
                 };
                 reader.readAsDataURL(file);
             }
@@ -3209,7 +3230,6 @@
             const len = projectsData.length;
             if(len === 0) return;
             
-            // INFINITE LOOP LOGIC for active index bounds
             if (activeProjCoverflowIndex < 0) {
                 activeProjCoverflowIndex = len - 1;
             } else if (activeProjCoverflowIndex >= len) {
@@ -3273,16 +3293,19 @@
             const file = e.target.files[0];
             if (file && currentProjIdForFrontImg) {
                 const reader = new FileReader();
-                reader.onload = function(event) {
-                    const projIndex = projectsData.findIndex(p => p.id === currentProjIdForFrontImg);
-                    if(projIndex !== -1) {
-                        if(projectsData[projIndex].images.length > 0) {
-                            projectsData[projIndex].images[0] = event.target.result;
-                        } else {
-                            projectsData[projIndex].images.push(event.target.result);
+                reader.onload = async function(event) {
+                    const url = await uploadImageToDriveAndGetUrl(file, event.target.result);
+                    if(url) {
+                        const projIndex = projectsData.findIndex(p => p.id === currentProjIdForFrontImg);
+                        if(projIndex !== -1) {
+                            if(projectsData[projIndex].images.length > 0) {
+                                projectsData[projIndex].images[0] = url;
+                            } else {
+                                projectsData[projIndex].images.push(url);
+                            }
+                            buildProjectsCoverflow();
+                            markUnsavedChanges();
                         }
-                        buildProjectsCoverflow();
-                        markUnsavedChanges();
                     }
                 };
                 reader.readAsDataURL(file);
@@ -3554,18 +3577,21 @@
             const file = e.target.files[0];
             if (file && currentOpenProjId) {
                 const reader = new FileReader();
-                reader.onload = function(event) {
-                    const projIndex = projectsData.findIndex(p => p.id === currentOpenProjId);
-                    const caption = prompt("Masukkan caption untuk foto ini:");
-                    
-                    projectsData[projIndex].images.push(event.target.result);
-                    if(!projectsData[projIndex].captions) projectsData[projIndex].captions = [];
-                    projectsData[projIndex].captions.push(caption || '');
-                    
-                    currentProjGalleryIndex = projectsData[projIndex].images.length - 1; 
-                    updateProjGalleryView();
-                    buildProjectsCoverflow(); 
-                    markUnsavedChanges();
+                reader.onload = async function(event) {
+                    const url = await uploadImageToDriveAndGetUrl(file, event.target.result);
+                    if(url) {
+                        const projIndex = projectsData.findIndex(p => p.id === currentOpenProjId);
+                        const caption = prompt("Masukkan caption untuk foto ini:");
+                        
+                        projectsData[projIndex].images.push(url);
+                        if(!projectsData[projIndex].captions) projectsData[projIndex].captions = [];
+                        projectsData[projIndex].captions.push(caption || '');
+                        
+                        currentProjGalleryIndex = projectsData[projIndex].images.length - 1; 
+                        updateProjGalleryView();
+                        buildProjectsCoverflow(); 
+                        markUnsavedChanges();
+                    }
                 };
                 reader.readAsDataURL(file);
             }
@@ -3624,6 +3650,7 @@
             if (file) {
                 const reader = new FileReader();
                 reader.onload = function(event) {
+                    // Hanya preview cropper, belum upload
                     imageToCrop.src = event.target.result;
                     cropModal.classList.remove('hidden');
                     
@@ -3651,7 +3678,7 @@
             }
         }
 
-        function applyCrop() {
+        async function applyCrop() {
             if (!cropper) return;
             const canvas = cropper.getCroppedCanvas({
                 width: 800, 
@@ -3660,9 +3687,14 @@
                 imageSmoothingQuality: 'high',
             });
             
-            document.getElementById('profileImage').src = canvas.toDataURL('image/jpeg', 0.8);
+            const base64 = canvas.toDataURL('image/jpeg', 0.8);
             closeCropModal();
-            markUnsavedChanges();
+            
+            const url = await uploadImageToDriveAndGetUrl({name: "profile_cropped.jpg", type: "image/jpeg"}, base64);
+            if(url) {
+                document.getElementById('profileImage').src = url;
+                markUnsavedChanges();
+            }
         }
 
         const uniLogoInput = document.getElementById('uniLogoUploadInput');
@@ -3671,9 +3703,12 @@
             const file = e.target.files[0];
             if (file) {
                 const reader = new FileReader();
-                reader.onload = function(event) {
-                    document.getElementById('uniLogo').src = event.target.result;
-                    markUnsavedChanges();
+                reader.onload = async function(event) {
+                    const url = await uploadImageToDriveAndGetUrl(file, event.target.result);
+                    if(url) {
+                        document.getElementById('uniLogo').src = url;
+                        markUnsavedChanges();
+                    }
                 };
                 reader.readAsDataURL(file);
             }
@@ -3685,9 +3720,12 @@
             const file = e.target.files[0];
             if (file) {
                 const reader = new FileReader();
-                reader.onload = function(event) {
-                    document.getElementById('hsLogo').src = event.target.result;
-                    markUnsavedChanges();
+                reader.onload = async function(event) {
+                    const url = await uploadImageToDriveAndGetUrl(file, event.target.result);
+                    if(url) {
+                        document.getElementById('hsLogo').src = url;
+                        markUnsavedChanges();
+                    }
                 };
                 reader.readAsDataURL(file);
             }
@@ -3699,9 +3737,12 @@
             const file = e.target.files[0];
             if (file) {
                 const reader = new FileReader();
-                reader.onload = function(event) {
-                    document.getElementById('home-hero').style.backgroundImage = `url('${event.target.result}')`;
-                    markUnsavedChanges();
+                reader.onload = async function(event) {
+                    const url = await uploadImageToDriveAndGetUrl(file, event.target.result);
+                    if(url) {
+                        document.getElementById('home-hero').style.backgroundImage = `url('${url}')`;
+                        markUnsavedChanges();
+                    }
                 };
                 reader.readAsDataURL(file);
             }
