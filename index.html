@@ -165,11 +165,11 @@
             display: none !important;
         }
 
-        /* TIMELINE STYLES (WIDER) */
+        /* TIMELINE STYLES (COMPACT) */
         .timeline-container {
             position: relative;
             width: 100%;
-            max-width: 100%; /* REVISED: Membiarkan lebar membentang sepanjang layar max-w-[1400px] */
+            max-width: 1000px; 
             margin: 0 auto;
             z-index: 10;
         }
@@ -185,7 +185,7 @@
             z-index: 1;
         }
         .timeline-item {
-            padding: 8px 40px; /* REVISED: Sedikit penyesuaian jarak dari garis tengah */
+            padding: 8px 30px; 
             position: relative;
             background-color: inherit;
             width: 50%; 
@@ -225,7 +225,7 @@
             box-shadow: var(--tw-shadow-card-pop);
             transition: all 0.3s ease;
             width: 100%;
-            max-width: 95%; /* REVISED: Membuat card mengisi hampir seluruh ruang kiri/kanannya (lebih panjang) */
+            max-width: 40rem; 
             cursor: pointer;
             z-index: 10;
             display: flex;
@@ -590,7 +590,6 @@
         <input type="file" id="projFrontImageUploadInput" accept="image/*">
         <input type="file" id="projPdfUploadInput" accept=".pdf">
         <input type="file" id="orgBgImageUploadInput" accept="image/*">
-        <input type="file" id="orgGalleryUploadInput" accept="image/*">
     </div>
 
     <!-- Hero Section -->
@@ -992,7 +991,7 @@
         </div>
     </section>
 
-    <!-- Professional Experiences Section (WIDER TIMELINE) -->
+    <!-- Professional Experiences Section (COMPACT & CLEAN) -->
     <section class="py-24 relative overflow-hidden bg-eco-bg scroll-mt-16 z-10" id="experience">
         <!-- Background Decor -->
         <div class="absolute top-0 left-0 w-full h-40 bg-gradient-to-b from-white to-transparent -z-10"></div>
@@ -1191,12 +1190,207 @@
         </div>
     </div>
 
+    <!-- Modal Experience Details -->
+    <div id="expDetailModal" class="fixed inset-0 z-[90] hidden flex items-center justify-center bg-eco-textMain/90 backdrop-blur-md p-4 sm:p-6 transition-all duration-300 opacity-0" onclick="closeExpModal()">
+        <div class="bg-white rounded-[2rem] w-full max-w-6xl max-h-[95vh] shadow-[0_30px_60px_rgba(0,0,0,0.4)] flex flex-col overflow-hidden border border-gray-100 scale-95 transition-transform duration-300 z-[91] relative" id="expModalContent" onclick="event.stopPropagation()">
+            
+            <!-- Modal Header -->
+            <div class="bg-eco-visionDark text-white p-6 sm:p-8 flex justify-between items-start relative shrink-0 z-[91]">
+                <button onclick="editCurrentExpDetails()" class="admin-control hidden absolute top-4 left-4 bg-white/20 hover:bg-white/40 px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-2 z-[92]">
+                    <i class="fas fa-edit pointer-events-none"></i> Edit Content
+                </button>
+
+                <div class="flex-1 mt-4 sm:mt-0 flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+                    <img id="modalExpLogo" src="https://upload.wikimedia.org/wikipedia/commons/c/ca/1x1.png" class="h-12 object-contain bg-white/10 rounded-lg p-1" style="display:none;" alt="Company Logo">
+                    <div>
+                        <h2 class="text-2xl sm:text-3xl font-serif font-bold text-eco-visionAccent mb-1" id="modalExpTitle">Job Title</h2>
+                        <p class="text-white/80 font-medium text-sm flex items-center gap-2">
+                            <span id="modalExpCompany">Company Name</span> 
+                            <span class="mx-2 text-white/30">|</span> 
+                            <i class="far fa-calendar-alt text-xs"></i> <span id="modalExpDate">Date Range</span>
+                        </p>
+                    </div>
+                </div>
+                <button onclick="closeExpModal()" class="bg-white/10 hover:bg-white/20 text-white w-10 h-10 rounded-full flex items-center justify-center transition-colors ml-4 shrink-0 z-[92] relative"><i class="fas fa-times text-lg pointer-events-none"></i></button>
+            </div>
+            
+            <!-- Modal Body (Split Content and Gallery) -->
+            <div class="flex flex-col lg:flex-row flex-1 overflow-hidden bg-[#f8faf9] z-[91]">
+                <div class="w-full lg:w-1/2 p-6 sm:p-8 overflow-y-auto custom-scrollbar border-r border-gray-200/60 z-[91]">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-eco-sageLight/50 text-eco-sageHover font-bold text-[10px] tracking-widest uppercase border border-eco-sageLight mb-6">
+                        Core Contributions and Impact
+                    </div>
+                    <ul class="space-y-4 text-eco-textMuted text-sm font-light leading-relaxed" id="modalExpAchievements">
+                        <!-- LI items injected here -->
+                    </ul>
+                </div>
+                
+                <div class="w-full lg:w-1/2 p-6 sm:p-8 flex flex-col justify-center items-center bg-white relative z-[91]">
+                    <div class="admin-control hidden absolute top-4 right-4 flex gap-2 z-[93] bg-white p-1.5 rounded-xl shadow-sm border border-gray-100">
+                        <button onclick="directUploadExpImage()" class="bg-eco-sagePrimary hover:bg-eco-sageHover text-white px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-2 relative" title="Add New Photo">
+                            <i class="fas fa-plus pointer-events-none"></i> Add
+                        </button>
+                        <button onclick="directDeleteExpImage()" class="bg-red-50 hover:bg-red-100 text-red-500 px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-2 border border-red-100 relative" title="Delete Current Photo">
+                            <i class="fas fa-trash pointer-events-none"></i> Delete
+                        </button>
+                    </div>
+
+                    <div class="w-full aspect-[4/3] rounded-2xl overflow-hidden shadow-soft relative group bg-gray-50 border border-gray-100 z-[91]" id="modalGalleryContainer">
+                        <img id="modalExpImage" src="https://upload.wikimedia.org/wikipedia/commons/c/ca/1x1.png" class="w-full h-full object-cover transition-opacity duration-300 z-[91]">
+                        
+                        <button onclick="prevExpImage()" class="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white hover:bg-eco-sageLight text-eco-textMain shadow-md flex items-center justify-center transition-all z-[93] focus:outline-none hover:scale-110"><i class="fas fa-chevron-left text-sm pointer-events-none"></i></button>
+                        <button onclick="nextExpImage()" class="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white hover:bg-eco-sageLight text-eco-textMain shadow-md flex items-center justify-center transition-all z-[93] focus:outline-none hover:scale-110"><i class="fas fa-chevron-right text-sm pointer-events-none"></i></button>
+                        
+                        <!-- Caption (Pill Design) -->
+                        <div class="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/60 backdrop-blur-sm px-4 py-1.5 rounded-full text-white text-[10px] sm:text-xs font-medium text-center shadow-lg border border-white/10 transition-opacity duration-300 z-[92]" id="modalExpImageCaption">
+                            Caption
+                        </div>
+                    </div>
+                    <div class="flex gap-2 mt-4 z-[91]" id="modalGalleryDots">
+                        <!-- Dots injected here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: ORGANIZATION DETAILS -->
+    <div id="orgDetailModal" class="fixed inset-0 z-[90] hidden flex items-center justify-center bg-eco-textMain/90 backdrop-blur-md p-4 sm:p-6 transition-all duration-300 opacity-0" onclick="closeOrgModal()">
+        <div class="bg-white rounded-[2rem] w-full max-w-5xl max-h-[95vh] shadow-[0_30px_60px_rgba(0,0,0,0.4)] flex flex-col overflow-hidden border border-gray-100 scale-95 transition-transform duration-300 z-[91] relative" id="orgModalContent" onclick="event.stopPropagation()">
+            
+            <!-- Top Half: Image Gallery Cover -->
+            <div class="relative w-full h-64 sm:h-96 flex-shrink-0 z-[91] bg-gray-900">
+                <div class="admin-control hidden absolute top-4 right-4 flex gap-2 z-[93] bg-white/40 p-1.5 rounded-xl shadow-sm border border-white/50 backdrop-blur-md">
+                    <button onclick="directUploadOrgImage()" class="bg-eco-sagePrimary hover:bg-eco-sageHover text-white px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-2 relative" title="Add New Photo">
+                        <i class="fas fa-plus pointer-events-none"></i> Add Photo
+                    </button>
+                    <button onclick="directDeleteOrgImage()" class="bg-red-500/80 hover:bg-red-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-2 relative" title="Delete Current Photo">
+                        <i class="fas fa-trash pointer-events-none"></i> Delete
+                    </button>
+                </div>
+                
+                <button onclick="closeOrgModal()" class="absolute top-4 left-4 bg-white/20 hover:bg-white/40 backdrop-blur-md text-white w-10 h-10 rounded-full flex items-center justify-center transition-colors z-[93] relative border border-white/30 shadow-sm"><i class="fas fa-times text-lg pointer-events-none drop-shadow-md"></i></button>
+
+                <!-- Gambar diatur absolute inset-0 agar benar-benar penuh -->
+                <img id="modalOrgImage" src="https://upload.wikimedia.org/wikipedia/commons/c/ca/1x1.png" class="absolute inset-0 w-full h-full object-cover opacity-100 transition-opacity duration-300">
+                
+                <!-- Gradient bawah untuk teks -->
+                <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none"></div>
+
+                <!-- Slider Arrows -->
+                <button onclick="prevOrgImage()" class="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/30 hover:bg-white/50 text-white backdrop-blur-md flex items-center justify-center transition-all z-[93] focus:outline-none hover:scale-110 border border-white/20 shadow-sm"><i class="fas fa-chevron-left text-sm pointer-events-none drop-shadow-md"></i></button>
+                <button onclick="nextOrgImage()" class="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/30 hover:bg-white/50 text-white backdrop-blur-md flex items-center justify-center transition-all z-[93] focus:outline-none hover:scale-110 border border-white/20 shadow-sm"><i class="fas fa-chevron-right text-sm pointer-events-none drop-shadow-md"></i></button>
+
+                <!-- Dots -->
+                <div class="absolute bottom-6 right-6 flex gap-2 z-[92]" id="modalOrgGalleryDots"></div>
+
+                <!-- Overlay Info -->
+                <div class="absolute bottom-6 left-6 sm:left-8 z-[92] text-white">
+                    <h2 class="text-3xl sm:text-4xl font-serif font-bold text-white mb-1 drop-shadow-lg" id="modalOrgRole">Role</h2>
+                    <p class="text-eco-visionAccent font-bold text-sm tracking-widest uppercase mb-2 flex items-center gap-2 drop-shadow-md">
+                        <span id="modalOrgName">Organization</span> 
+                    </p>
+                    <p class="text-white/90 text-xs font-medium flex items-center gap-1.5 bg-black/50 px-3 py-1.5 rounded-full w-max backdrop-blur-md border border-white/20 shadow-sm">
+                        <i class="far fa-calendar-alt"></i> <span id="modalOrgDate">Date Range</span>
+                    </p>
+                </div>
+            </div>
+            
+            <!-- Bottom Half: Content details -->
+            <div class="p-6 sm:p-8 overflow-y-auto custom-scrollbar flex-1 bg-white relative z-[91]">
+                <button onclick="editCurrentOrgDetails()" class="admin-control hidden absolute top-6 right-6 sm:right-8 bg-gray-100 hover:bg-gray-200 text-eco-textMain px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 z-[92]">
+                    <i class="fas fa-edit pointer-events-none"></i> Edit Text
+                </button>
+
+                <h3 class="font-serif text-xl sm:text-2xl font-bold text-eco-textMain mb-4 sm:mb-6 pr-24">Key Responsibilities and Impact</h3>
+                <ul class="space-y-4 text-eco-textMuted text-sm font-light leading-relaxed" id="modalOrgDescription">
+                    <!-- LI items injected here -->
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: PROJECT DETAILS -->
+    <div id="projectDetailModal" class="fixed inset-0 z-[90] hidden flex items-center justify-center bg-eco-textMain/90 backdrop-blur-md p-4 sm:p-6 transition-all duration-300 opacity-0" onclick="closeProjectModal()">
+        <div class="bg-white rounded-[2rem] w-full max-w-6xl max-h-[95vh] shadow-[0_30px_60px_rgba(0,0,0,0.4)] flex flex-col overflow-hidden border border-gray-100 scale-95 transition-transform duration-300 z-[91] relative" id="projModalContent" onclick="event.stopPropagation()">
+            
+            <!-- Modal Header -->
+            <div class="bg-eco-textMain text-white p-6 sm:p-8 flex justify-between items-start relative shrink-0 z-[91]">
+                <button onclick="editCurrentProjDetails()" class="admin-control hidden absolute top-4 left-4 bg-white/20 hover:bg-white/40 px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-2 z-[92]">
+                    <i class="fas fa-edit pointer-events-none"></i> Edit Content
+                </button>
+
+                <div class="flex-1 mt-4 sm:mt-0 flex flex-col gap-2 items-start">
+                    <h2 class="text-2xl sm:text-4xl font-serif font-bold text-white leading-tight" id="modalProjTitle">Project Title</h2>
+                    
+                    <span class="text-white/80 font-medium text-sm flex items-center gap-1.5 mt-1">
+                        <i class="fas fa-map-marker-alt text-eco-visionAccent"></i> <span id="modalProjLocation">Location</span>
+                    </span>
+                </div>
+                <button onclick="closeProjectModal()" class="bg-white/10 hover:bg-white/20 text-white w-10 h-10 rounded-full flex items-center justify-center transition-colors ml-4 shrink-0 z-[92] relative"><i class="fas fa-times text-lg pointer-events-none"></i></button>
+            </div>
+            
+            <!-- Modal Body -->
+            <div class="flex flex-col lg:flex-row flex-1 overflow-hidden bg-[#f8faf9] z-[91]">
+                <!-- Left: Description (Bullets) & PDF Button -->
+                <div class="w-full lg:w-1/2 p-6 sm:p-8 overflow-y-auto custom-scrollbar border-r border-gray-200/60 z-[91] flex flex-col">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-eco-sageLight/50 text-eco-sageHover font-bold text-[10px] tracking-widest uppercase border border-eco-sageLight mb-6 w-max">
+                        Project Overview
+                    </div>
+                    
+                    <!-- Bullet Points Container -->
+                    <ul class="space-y-4 text-eco-textMuted text-sm font-light leading-relaxed flex-grow" id="modalProjDescription">
+                        <!-- LIs Injected here -->
+                    </ul>
+
+                    <div class="mt-8 pt-6 border-t border-gray-200 flex flex-col gap-3">
+                        <a href="#" id="modalProjPdfLink" target="_blank" class="w-full py-3.5 rounded-xl bg-eco-sagePrimary text-white font-bold text-sm flex items-center justify-center gap-2 hover:bg-eco-sageHover transition shadow-md hidden">
+                            <i class="fas fa-file-pdf"></i> View / Download Document
+                        </a>
+                        <p id="modalProjNoPdfText" class="text-xs text-gray-400 font-medium italic text-center w-full py-2">No document attached.</p>
+                        
+                        <button onclick="triggerProjPdfUpload()" class="admin-control hidden w-full py-2.5 rounded-xl border-2 border-dashed border-eco-sagePrimary text-eco-sagePrimary font-bold text-xs flex items-center justify-center gap-2 hover:bg-eco-sageLight transition z-[93] relative">
+                            <i class="fas fa-upload pointer-events-none"></i> Upload / Replace PDF Report
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Right: Image Gallery Slider -->
+                <div class="w-full lg:w-1/2 p-6 sm:p-8 flex flex-col justify-center items-center bg-white relative z-[91]">
+                    <!-- Photo Management Toolbar -->
+                    <div class="admin-control hidden absolute top-4 right-4 flex gap-2 z-[93] bg-white p-1.5 rounded-xl shadow-sm border border-gray-100">
+                        <button onclick="directUploadProjImage()" class="bg-eco-sagePrimary hover:bg-eco-sageHover text-white px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-2 relative" title="Add New Photo">
+                            <i class="fas fa-plus pointer-events-none"></i> Add
+                        </button>
+                        <button onclick="directDeleteProjImage()" class="bg-red-50 hover:bg-red-100 text-red-500 px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-2 border border-red-100 relative" title="Delete Current Photo">
+                            <i class="fas fa-trash pointer-events-none"></i> Delete
+                        </button>
+                    </div>
+
+                    <div class="w-full aspect-[4/3] rounded-2xl overflow-hidden shadow-soft relative group bg-gray-50 border border-gray-100 z-[91]" id="modalProjGalleryContainer">
+                        <img id="modalProjImage" src="https://upload.wikimedia.org/wikipedia/commons/c/ca/1x1.png" class="w-full h-full object-cover transition-opacity duration-300 z-[91]">
+                        
+                        <button onclick="prevProjImage()" class="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white hover:bg-eco-sageLight text-eco-textMain shadow-md flex items-center justify-center transition-all z-[93] focus:outline-none hover:scale-110"><i class="fas fa-chevron-left text-sm pointer-events-none"></i></button>
+                        <button onclick="nextProjImage()" class="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white hover:bg-eco-sageLight text-eco-textMain shadow-md flex items-center justify-center transition-all z-[93] focus:outline-none hover:scale-110"><i class="fas fa-chevron-right text-sm pointer-events-none"></i></button>
+
+                        <div class="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/60 backdrop-blur-sm px-4 py-1.5 rounded-full text-white text-[10px] sm:text-xs font-medium text-center shadow-lg border border-white/10 transition-opacity duration-300 z-[92]" id="modalProjImageCaption">
+                            Caption
+                        </div>
+                    </div>
+                    <div class="flex gap-2 mt-4 z-[91]" id="modalProjGalleryDots">
+                        <!-- Dots injected here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Modal Image Cropper -->
     <div id="cropModal" class="fixed inset-0 z-[100] hidden flex items-center justify-center bg-eco-textMain/80 backdrop-blur-sm">
         <div class="bg-white rounded-[2rem] p-6 max-w-lg w-full mx-4 shadow-[0_20px_50px_rgba(0,0,0,0.3)] flex flex-col border border-gray-100 z-[101]">
             <div class="flex justify-between items-center mb-4">
                 <h3 class="text-xl font-serif font-bold text-eco-textMain">Adjust Photo</h3>
-                <button onclick="closeGlobalCropModal()" class="text-gray-400 hover:text-eco-textMain"><i class="fas fa-times pointer-events-none"></i></button>
+                <button onclick="closeCropModal()" class="text-gray-400 hover:text-eco-textMain"><i class="fas fa-times pointer-events-none"></i></button>
             </div>
             
             <div class="w-full h-80 bg-gray-100 rounded-xl overflow-hidden mb-4 flex items-center justify-center">
@@ -1204,8 +1398,8 @@
             </div>
             
             <div class="flex justify-end gap-3 mt-2 z-[101] relative">
-                <button onclick="closeGlobalCropModal()" class="px-5 py-2.5 rounded-xl text-eco-textMuted hover:bg-gray-100 transition font-semibold text-sm z-[101] relative">Cancel</button>
-                <button onclick="applyGlobalCrop()" class="px-5 py-2.5 rounded-xl bg-eco-sagePrimary text-white hover:bg-eco-sageHover transition font-semibold text-sm shadow-md flex items-center gap-2 z-[101] relative">
+                <button onclick="closeCropModal()" class="px-5 py-2.5 rounded-xl text-eco-textMuted hover:bg-gray-100 transition font-semibold text-sm z-[101] relative">Cancel</button>
+                <button onclick="applyCrop()" class="px-5 py-2.5 rounded-xl bg-eco-sagePrimary text-white hover:bg-eco-sageHover transition font-semibold text-sm shadow-md flex items-center gap-2 z-[101] relative">
                     <i class="fas fa-crop-alt pointer-events-none"></i> Apply & Save
                 </button>
             </div>
@@ -1413,6 +1607,8 @@
                 const response = await sendDataToBackend(payload);
                 hideLoading();
                 if (response && response.id) {
+                    // MENGGUNAKAN THUMBNAIL URL AGAR BISA TAMPIL DI WEB
+                    // Parameter sz=w1920 memastikan resolusinya tetap besar dan jernih
                     return `https://drive.google.com/thumbnail?id=${response.id}&sz=w1920`;
                 }
                 return null;
@@ -1765,53 +1961,6 @@
         }
 
         // ==========================================
-        // ✂️ GLOBAL IMAGE CROPPER (ADJUST PHOTO)
-        // ==========================================
-        let globalCropper = null;
-        let globalCropCallback = null;
-
-        function openGlobalCropModal(imageSrc, aspectRatio, callback) {
-            globalCropCallback = callback;
-            const imageToCrop = document.getElementById('imageToCrop');
-            imageToCrop.src = imageSrc;
-            document.getElementById('cropModal').classList.remove('hidden');
-            
-            if (globalCropper) {
-                globalCropper.destroy();
-            }
-            globalCropper = new Cropper(imageToCrop, {
-                aspectRatio: aspectRatio, // Bisa bernilai NaN untuk bebas
-                viewMode: 2,      
-                dragMode: 'move', 
-                background: false,
-                autoCropArea: 0.9,
-            });
-        }
-
-        function closeGlobalCropModal() {
-            document.getElementById('cropModal').classList.add('hidden');
-            if (globalCropper) {
-                globalCropper.destroy();
-                globalCropper = null;
-            }
-            globalCropCallback = null;
-        }
-
-        async function applyGlobalCrop() {
-            if (!globalCropper || !globalCropCallback) return;
-            const canvas = globalCropper.getCroppedCanvas({
-                maxWidth: 1920,
-                maxHeight: 1920,
-                imageSmoothingEnabled: true,
-                imageSmoothingQuality: 'high',
-            });
-            
-            const base64 = canvas.toDataURL('image/jpeg', 0.85);
-            closeGlobalCropModal();
-            globalCropCallback(base64); // Jalankan fungsi simpan/upload setelah crop
-        }
-
-        // ==========================================
         // SKILLS & UNIFIED SOFTWARE LOGIC 
         // ==========================================
         function scrollSkills(direction) {
@@ -1992,14 +2141,12 @@
             const file = e.target.files[0];
             if (file && currentTagToEdit) {
                 const reader = new FileReader();
-                reader.onload = function(event) {
-                    openGlobalCropModal(event.target.result, NaN, async (croppedBase64) => {
-                        const url = await uploadImageToDriveAndGetUrl({name: file.name, type: "image/jpeg"}, croppedBase64);
-                        if (url) {
-                            currentTagToEdit.src = url;
-                            markUnsavedChanges();
-                        }
-                    });
+                reader.onload = async function(event) {
+                    const url = await uploadImageToDriveAndGetUrl(file, event.target.result);
+                    if (url) {
+                        currentTagToEdit.src = url;
+                        markUnsavedChanges();
+                    }
                 };
                 reader.readAsDataURL(file);
             }
@@ -2259,25 +2406,23 @@
             const file = e.target.files[0];
             if (file && currentExpIdForLogo) {
                 const reader = new FileReader();
-                reader.onload = function(event) {
-                    openGlobalCropModal(event.target.result, NaN, async (croppedBase64) => {
-                        const url = await uploadImageToDriveAndGetUrl({name: file.name, type: "image/jpeg"}, croppedBase64);
-                        if(url) {
-                            const expIndex = experiencesData.findIndex(ex => ex.id === currentExpIdForLogo);
-                            if(expIndex !== -1) {
-                                experiencesData[expIndex].instLogo = url;
-                                renderTimeline(); 
-                                markUnsavedChanges();
-                                
-                                if (currentOpenExpId === currentExpIdForLogo) {
-                                    const modalLogoEl = document.getElementById('modalExpLogo');
-                                    modalLogoEl.src = url;
-                                    modalLogoEl.style.display = 'block';
-                                    if(document.getElementById('modalDefaultIcon')) document.getElementById('modalDefaultIcon').style.display = 'none';
-                                }
+                reader.onload = async function(event) {
+                    const url = await uploadImageToDriveAndGetUrl(file, event.target.result);
+                    if(url) {
+                        const expIndex = experiencesData.findIndex(ex => ex.id === currentExpIdForLogo);
+                        if(expIndex !== -1) {
+                            experiencesData[expIndex].instLogo = url;
+                            renderTimeline(); 
+                            markUnsavedChanges();
+                            
+                            if (currentOpenExpId === currentExpIdForLogo) {
+                                const modalLogoEl = document.getElementById('modalExpLogo');
+                                modalLogoEl.src = url;
+                                modalLogoEl.style.display = 'block';
+                                if(document.getElementById('modalDefaultIcon')) document.getElementById('modalDefaultIcon').style.display = 'none';
                             }
                         }
-                    });
+                    }
                 };
                 reader.readAsDataURL(file);
             }
@@ -2532,21 +2677,19 @@
             const file = e.target.files[0];
             if (file && currentOpenExpId) {
                 const reader = new FileReader();
-                reader.onload = function(event) {
-                    openGlobalCropModal(event.target.result, NaN, async (croppedBase64) => {
-                        const url = await uploadImageToDriveAndGetUrl({name: file.name, type: "image/jpeg"}, croppedBase64);
-                        if(url) {
-                            const expIndex = experiencesData.findIndex(ex => ex.id === currentOpenExpId);
-                            const caption = prompt("Masukkan caption untuk foto ini:");
-                            
-                            experiencesData[expIndex].images.push(url);
-                            experiencesData[expIndex].captions.push(caption || '');
-                            
-                            currentGalleryIndex = experiencesData[expIndex].images.length - 1; 
-                            updateGalleryView();
-                            markUnsavedChanges();
-                        }
-                    });
+                reader.onload = async function(event) {
+                    const url = await uploadImageToDriveAndGetUrl(file, event.target.result);
+                    if(url) {
+                        const expIndex = experiencesData.findIndex(ex => ex.id === currentOpenExpId);
+                        const caption = prompt("Masukkan caption untuk foto ini:");
+                        
+                        experiencesData[expIndex].images.push(url);
+                        experiencesData[expIndex].captions.push(caption || '');
+                        
+                        currentGalleryIndex = experiencesData[expIndex].images.length - 1; 
+                        updateGalleryView();
+                        markUnsavedChanges();
+                    }
                 };
                 reader.readAsDataURL(file);
             }
@@ -2665,24 +2808,22 @@
             const file = e.target.files[0];
             if (file && currentOrgIdForBg) {
                 const reader = new FileReader();
-                reader.onload = function(event) {
-                    openGlobalCropModal(event.target.result, NaN, async (croppedBase64) => {
-                        const url = await uploadImageToDriveAndGetUrl({name: file.name, type: "image/jpeg"}, croppedBase64);
-                        if(url) {
-                            const orgIndex = organizationsData.findIndex(o => o.id === currentOrgIdForBg);
-                            if(orgIndex !== -1) {
-                                organizationsData[orgIndex].bgImage = url;
-                                if (!organizationsData[orgIndex].images) organizationsData[orgIndex].images = [];
-                                if (organizationsData[orgIndex].images.length === 0) {
-                                    organizationsData[orgIndex].images.push(url);
-                                } else {
-                                    organizationsData[orgIndex].images[0] = url; 
-                                }
-                                renderOrganizations();
-                                markUnsavedChanges();
+                reader.onload = async function(event) {
+                    const url = await uploadImageToDriveAndGetUrl(file, event.target.result);
+                    if(url) {
+                        const orgIndex = organizationsData.findIndex(o => o.id === currentOrgIdForBg);
+                        if(orgIndex !== -1) {
+                            organizationsData[orgIndex].bgImage = url;
+                            if (!organizationsData[orgIndex].images) organizationsData[orgIndex].images = [];
+                            if (organizationsData[orgIndex].images.length === 0) {
+                                organizationsData[orgIndex].images.push(url);
+                            } else {
+                                organizationsData[orgIndex].images[0] = url; 
                             }
+                            renderOrganizations();
+                            markUnsavedChanges();
                         }
-                    });
+                    }
                 };
                 reader.readAsDataURL(file);
             }
@@ -2879,7 +3020,11 @@
             });
         }
 
-        const orgGalleryInput = document.getElementById('orgGalleryUploadInput');
+        const orgGalleryInput = document.createElement('input');
+        orgGalleryInput.type = 'file';
+        orgGalleryInput.accept = 'image/*';
+        orgGalleryInput.style.display = 'none';
+        document.body.appendChild(orgGalleryInput);
 
         function directUploadOrgImage() {
             orgGalleryInput.click();
@@ -2906,17 +3051,15 @@
             const file = e.target.files[0];
             if (file && currentOpenOrgId) {
                 const reader = new FileReader();
-                reader.onload = function(event) {
-                    openGlobalCropModal(event.target.result, NaN, async (croppedBase64) => {
-                        const url = await uploadImageToDriveAndGetUrl({name: file.name, type: "image/jpeg"}, croppedBase64);
-                        if(url) {
-                            const orgIndex = organizationsData.findIndex(o => o.id === currentOpenOrgId);
-                            organizationsData[orgIndex].images.push(url);
-                            currentOrgGalleryIndex = organizationsData[orgIndex].images.length - 1; 
-                            updateOrgGalleryView();
-                            markUnsavedChanges();
-                        }
-                    });
+                reader.onload = async function(event) {
+                    const url = await uploadImageToDriveAndGetUrl(file, event.target.result);
+                    if(url) {
+                        const orgIndex = organizationsData.findIndex(o => o.id === currentOpenOrgId);
+                        organizationsData[orgIndex].images.push(url);
+                        currentOrgGalleryIndex = organizationsData[orgIndex].images.length - 1; 
+                        updateOrgGalleryView();
+                        markUnsavedChanges();
+                    }
                 };
                 reader.readAsDataURL(file);
             }
@@ -3151,22 +3294,20 @@
             const file = e.target.files[0];
             if (file && currentProjIdForFrontImg) {
                 const reader = new FileReader();
-                reader.onload = function(event) {
-                    openGlobalCropModal(event.target.result, NaN, async (croppedBase64) => {
-                        const url = await uploadImageToDriveAndGetUrl({name: file.name, type: "image/jpeg"}, croppedBase64);
-                        if(url) {
-                            const projIndex = projectsData.findIndex(p => p.id === currentProjIdForFrontImg);
-                            if(projIndex !== -1) {
-                                if(projectsData[projIndex].images.length > 0) {
-                                    projectsData[projIndex].images[0] = url;
-                                } else {
-                                    projectsData[projIndex].images.push(url);
-                                }
-                                buildProjectsCoverflow();
-                                markUnsavedChanges();
+                reader.onload = async function(event) {
+                    const url = await uploadImageToDriveAndGetUrl(file, event.target.result);
+                    if(url) {
+                        const projIndex = projectsData.findIndex(p => p.id === currentProjIdForFrontImg);
+                        if(projIndex !== -1) {
+                            if(projectsData[projIndex].images.length > 0) {
+                                projectsData[projIndex].images[0] = url;
+                            } else {
+                                projectsData[projIndex].images.push(url);
                             }
+                            buildProjectsCoverflow();
+                            markUnsavedChanges();
                         }
-                    });
+                    }
                 };
                 reader.readAsDataURL(file);
             }
@@ -3437,23 +3578,21 @@
             const file = e.target.files[0];
             if (file && currentOpenProjId) {
                 const reader = new FileReader();
-                reader.onload = function(event) {
-                    openGlobalCropModal(event.target.result, NaN, async (croppedBase64) => {
-                        const url = await uploadImageToDriveAndGetUrl({name: file.name, type: "image/jpeg"}, croppedBase64);
-                        if(url) {
-                            const projIndex = projectsData.findIndex(p => p.id === currentOpenProjId);
-                            const caption = prompt("Masukkan caption untuk foto ini:");
-                            
-                            projectsData[projIndex].images.push(url);
-                            if(!projectsData[projIndex].captions) projectsData[projIndex].captions = [];
-                            projectsData[projIndex].captions.push(caption || '');
-                            
-                            currentProjGalleryIndex = projectsData[projIndex].images.length - 1; 
-                            updateProjGalleryView();
-                            buildProjectsCoverflow(); 
-                            markUnsavedChanges();
-                        }
-                    });
+                reader.onload = async function(event) {
+                    const url = await uploadImageToDriveAndGetUrl(file, event.target.result);
+                    if(url) {
+                        const projIndex = projectsData.findIndex(p => p.id === currentOpenProjId);
+                        const caption = prompt("Masukkan caption untuk foto ini:");
+                        
+                        projectsData[projIndex].images.push(url);
+                        if(!projectsData[projIndex].captions) projectsData[projIndex].captions = [];
+                        projectsData[projIndex].captions.push(caption || '');
+                        
+                        currentProjGalleryIndex = projectsData[projIndex].images.length - 1; 
+                        updateProjGalleryView();
+                        buildProjectsCoverflow(); 
+                        markUnsavedChanges();
+                    }
                 };
                 reader.readAsDataURL(file);
             }
@@ -3499,7 +3638,10 @@
         buildProjectsCoverflow();
 
         const profileInput = document.getElementById('profileUploadInput');
-        
+        const cropModal = document.getElementById('cropModal');
+        const imageToCrop = document.getElementById('imageToCrop');
+        let cropper = null;
+
         function triggerProfileUpload() {
             profileInput.click();
         }
@@ -3509,12 +3651,19 @@
             if (file) {
                 const reader = new FileReader();
                 reader.onload = function(event) {
-                    openGlobalCropModal(event.target.result, NaN, async (croppedBase64) => {
-                        const url = await uploadImageToDriveAndGetUrl({name: "profile_cropped.jpg", type: "image/jpeg"}, croppedBase64);
-                        if(url) {
-                            document.getElementById('profileImage').src = url;
-                            markUnsavedChanges();
-                        }
+                    // Hanya preview cropper, belum upload
+                    imageToCrop.src = event.target.result;
+                    cropModal.classList.remove('hidden');
+                    
+                    if (cropper) {
+                        cropper.destroy();
+                    }
+                    cropper = new Cropper(imageToCrop, {
+                        aspectRatio: NaN, 
+                        viewMode: 2,      
+                        dragMode: 'move', 
+                        background: false,
+                        autoCropArea: 0.8,
                     });
                 };
                 reader.readAsDataURL(file);
@@ -3522,24 +3671,48 @@
             e.target.value = '';
         });
 
+        function closeCropModal() {
+            cropModal.classList.add('hidden');
+            if (cropper) {
+                cropper.destroy();
+                cropper = null;
+            }
+        }
+
+        async function applyCrop() {
+            if (!cropper) return;
+            const canvas = cropper.getCroppedCanvas({
+                width: 800, 
+                height: 1000,
+                imageSmoothingEnabled: true,
+                imageSmoothingQuality: 'high',
+            });
+            
+            const base64 = canvas.toDataURL('image/jpeg', 0.8);
+            closeCropModal();
+            
+            const url = await uploadImageToDriveAndGetUrl({name: "profile_cropped.jpg", type: "image/jpeg"}, base64);
+            if(url) {
+                document.getElementById('profileImage').src = url;
+                markUnsavedChanges();
+            }
+        }
+
         const uniLogoInput = document.getElementById('uniLogoUploadInput');
         function triggerUniLogoUpload() { uniLogoInput.click(); }
         uniLogoInput.addEventListener('change', function(e) {
             const file = e.target.files[0];
             if (file) {
                 const reader = new FileReader();
-                reader.onload = function(event) {
-                    openGlobalCropModal(event.target.result, NaN, async (croppedBase64) => {
-                        const url = await uploadImageToDriveAndGetUrl({name: file.name, type: "image/jpeg"}, croppedBase64);
-                        if(url) {
-                            document.getElementById('uniLogo').src = url;
-                            markUnsavedChanges();
-                        }
-                    });
+                reader.onload = async function(event) {
+                    const url = await uploadImageToDriveAndGetUrl(file, event.target.result);
+                    if(url) {
+                        document.getElementById('uniLogo').src = url;
+                        markUnsavedChanges();
+                    }
                 };
                 reader.readAsDataURL(file);
             }
-            e.target.value = '';
         });
 
         const hsLogoInput = document.getElementById('hsLogoUploadInput');
@@ -3548,18 +3721,15 @@
             const file = e.target.files[0];
             if (file) {
                 const reader = new FileReader();
-                reader.onload = function(event) {
-                    openGlobalCropModal(event.target.result, NaN, async (croppedBase64) => {
-                        const url = await uploadImageToDriveAndGetUrl({name: file.name, type: "image/jpeg"}, croppedBase64);
-                        if(url) {
-                            document.getElementById('hsLogo').src = url;
-                            markUnsavedChanges();
-                        }
-                    });
+                reader.onload = async function(event) {
+                    const url = await uploadImageToDriveAndGetUrl(file, event.target.result);
+                    if(url) {
+                        document.getElementById('hsLogo').src = url;
+                        markUnsavedChanges();
+                    }
                 };
                 reader.readAsDataURL(file);
             }
-            e.target.value = '';
         });
 
         const wallpaperInput = document.getElementById('wallpaperUploadInput');
@@ -3568,18 +3738,15 @@
             const file = e.target.files[0];
             if (file) {
                 const reader = new FileReader();
-                reader.onload = function(event) {
-                    openGlobalCropModal(event.target.result, NaN, async (croppedBase64) => {
-                        const url = await uploadImageToDriveAndGetUrl({name: file.name, type: "image/jpeg"}, croppedBase64);
-                        if(url) {
-                            document.getElementById('home-hero').style.backgroundImage = `url('${url}')`;
-                            markUnsavedChanges();
-                        }
-                    });
+                reader.onload = async function(event) {
+                    const url = await uploadImageToDriveAndGetUrl(file, event.target.result);
+                    if(url) {
+                        document.getElementById('home-hero').style.backgroundImage = `url('${url}')`;
+                        markUnsavedChanges();
+                    }
                 };
                 reader.readAsDataURL(file);
             }
-            e.target.value = '';
         });
 
         const cvInput = document.getElementById('cvUploadInput');
