@@ -1501,17 +1501,29 @@
             if (result.globalData.hsLogo) document.getElementById('hsLogo').src = result.globalData.hsLogo;
             if (result.globalData.wallpaper) document.getElementById('home-hero').style.backgroundImage = result.globalData.wallpaper;
             
-            // --- INI ADALAH BAGIAN PEMBERSIH PAKSA DATA LAMA DARI DATABASE ---
             if (result.globalData.skillsContainerHTML) {
-                const container = document.getElementById('skillsContainer');
-                container.innerHTML = result.globalData.skillsContainerHTML;
+                // Fetch returns the raw HTML string for the cards. We want to wipe out the tags
+                // We parse it into a dummy element so we can manipulate it BEFORE applying it to the live DOM.
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = result.globalData.skillsContainerHTML;
                 
-                // Cari setiap card dan hancurkan sisa-sisa kotak software (div flex-wrap, mt-4, border-t, dll)
-                const cards = container.querySelectorAll('.eco-card');
-                cards.forEach(card => {
-                    const softwareTagsContainers = card.querySelectorAll('div.flex.flex-wrap, div[class*="gap-2"], div[class*="mt-4"], div[class*="border-t"]');
-                    softwareTagsContainers.forEach(el => el.remove());
-                });
+                // Now, clean up all the software tag containers inside the cards
+                const tagsToErase = tempDiv.querySelectorAll('.eco-card div.flex.flex-wrap, .eco-card div[class*="flex-wrap"], .eco-card div[class*="gap-2"], .eco-card .border-t');
+                
+                tagsToErase.forEach(el => el.remove());
+                
+                // Assign the CLEANED HTML to the live DOM
+                document.getElementById('skillsContainer').innerHTML = tempDiv.innerHTML;
+            }
+
+            if (result.globalData.unifiedSoftwareContainerHTML) {
+                // Ensure this executes synchronously with the fetch return.
+                 setTimeout(() => {
+                    const unifiedContainer = document.getElementById('unifiedSoftwareContainer');
+                    if (unifiedContainer) {
+                         unifiedContainer.innerHTML = result.globalData.unifiedSoftwareContainerHTML;
+                    }
+                }, 0);
             }
             
             if (result.globalData.cvHref) document.getElementById('cvDownloadLink').href = result.globalData.cvHref;
@@ -1545,6 +1557,11 @@
             globalData.hsLogo = document.getElementById('hsLogo').src;
             globalData.wallpaper = document.getElementById('home-hero').style.backgroundImage;
             globalData.skillsContainerHTML = document.getElementById('skillsContainer').innerHTML;
+            
+            // Critical fix: We must save the *exact* HTML string of the bottom software box
+            const unifiedContainerElement = document.getElementById('unifiedSoftwareContainer');
+            globalData.unifiedSoftwareContainerHTML = unifiedContainerElement ? unifiedContainerElement.innerHTML : "";
+
             globalData.cvHref = document.getElementById('cvDownloadLink').href;
 
             const payload = {
