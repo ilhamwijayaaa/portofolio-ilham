@@ -169,7 +169,7 @@
         .timeline-container {
             position: relative;
             width: 100%;
-            max-width: 1400px; /* REVISI: Dibuat sejajar dengan logo ILHAM & Download CV */
+            max-width: 1400px;
             margin: 0 auto;
             z-index: 10;
         }
@@ -225,7 +225,7 @@
             box-shadow: var(--tw-shadow-card-pop);
             transition: all 0.3s ease;
             width: 100%;
-            max-width: 100%; /* REVISI: Diubah agar box memanjang maksimal 100% dari kolom sisinya */
+            max-width: 100%;
             cursor: pointer;
             z-index: 10;
             display: flex;
@@ -247,6 +247,46 @@
             cursor: pointer;
             border-radius: 4px;
         }
+        
+        /* New styles for timeline images */
+        .timeline-image-wrapper {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: calc(100% - 60px); /* Adjust based on padding */
+            display: flex;
+            gap: 0.5rem;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            z-index: 5;
+        }
+        .timeline-item.left .timeline-image-wrapper {
+            right: -100%;
+            padding-left: 60px;
+        }
+        .timeline-item.right .timeline-image-wrapper {
+            left: -100%;
+            padding-right: 60px;
+            justify-content: flex-end;
+        }
+        .timeline-image-wrapper img {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 0.5rem;
+            border: 1px solid rgba(115, 142, 120, 0.2);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            transition: transform 0.3s ease;
+        }
+        .timeline-item:hover .timeline-image-wrapper {
+            opacity: 1;
+        }
+        .timeline-image-wrapper img:hover {
+            transform: scale(1.1);
+            z-index: 10;
+            position: relative;
+        }
 
         @media screen and (max-width: 768px) {
             .timeline-container::after { left: 31px; }
@@ -255,6 +295,8 @@
             .timeline-item.left, .timeline-item.right { justify-content: flex-start; }
             .timeline-item.left::after, .timeline-item.right::after { left: 24px; top: 20px; }
             .exp-card { max-width: 100%; }
+            /* Hide images on mobile for cleaner layout or position them differently */
+            .timeline-image-wrapper { display: none; }
         }
 
         /* ORGANIZATION EXPANDING CARDS */
@@ -2237,9 +2279,12 @@
                 ],
                 images: [
                     "https://images.unsplash.com/photo-1611273426858-450d8e81430c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-                    "https://images.unsplash.com/photo-1473448912268-2022ce9509d8?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                    "https://images.unsplash.com/photo-1473448912268-2022ce9509d8?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                    "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                    "https://images.unsplash.com/photo-1466611653911-95081537e5b7?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                    "https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" // Example extra image
                 ],
-                captions: ["Post-Mining Reclamation Area", "Field Data Collection"]
+                captions: ["Post-Mining Reclamation Area", "Field Data Collection", "Orchid Observation", "Camera Trap setup", "Certificate"]
             },
             {
                 id: 2,
@@ -2256,9 +2301,10 @@
                     "<highlight>Dutch Map Georeferencing:</highlight> Placed and aligned 7 historical map sheets (1960) to their corresponding geographical positions."
                 ],
                 images: [
-                    "https://images.unsplash.com/photo-1524661135-423995f22d0b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                    "https://images.unsplash.com/photo-1524661135-423995f22d0b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                    "https://images.unsplash.com/photo-1584467735871-8e85353a8413?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
                 ],
-                captions: ["Spatial Data Analysis and Mapping"]
+                captions: ["Spatial Data Analysis and Mapping", "Field Verification"]
             },
             { 
                 id: 3, 
@@ -2358,9 +2404,26 @@
 
                 const adminOutline = isAdmin ? 'editable-inst-logo' : '';
 
+                // Generate Image Thumbnails HTML (Max 4)
+                let imageThumbnailsHTML = '';
+                if (exp.images && exp.images.length > 0) {
+                    const maxImages = Math.min(exp.images.length, 4);
+                    for (let i = 0; i < maxImages; i++) {
+                        // Avoid placeholders if possible, or display them if it's the only image
+                        if(exp.images[i] && !exp.images[i].includes("placehold.co") || maxImages === 1) {
+                            imageThumbnailsHTML += `<img src="${exp.images[i]}" alt="Experience image ${i+1}" loading="lazy">`;
+                        }
+                    }
+                }
+
                 const cardHTML = `
                 <div class="timeline-item ${isLeft ? 'left' : 'right'} group/exp cursor-pointer" onclick="openExpModal(${exp.id})">
                     
+                    <!-- NEW: Timeline Image Thumbnails Wrapper -->
+                    <div class="timeline-image-wrapper">
+                        ${imageThumbnailsHTML}
+                    </div>
+
                     <div class="exp-card p-5 sm:p-6 relative bg-white z-20">
                         
                         <!-- Admin Controls -->
@@ -2669,6 +2732,8 @@
                 exp.captions.splice(currentGalleryIndex, 1);
                 currentGalleryIndex = 0; 
                 updateGalleryView();
+                // Also update the thumbnail view
+                renderTimeline();
                 markUnsavedChanges();
             }
         }
@@ -2688,6 +2753,8 @@
                         
                         currentGalleryIndex = experiencesData[expIndex].images.length - 1; 
                         updateGalleryView();
+                        // Also update the thumbnail view
+                        renderTimeline();
                         markUnsavedChanges();
                     }
                 };
