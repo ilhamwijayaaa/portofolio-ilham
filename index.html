@@ -247,49 +247,6 @@
             cursor: pointer;
             border-radius: 4px;
         }
-        
-        /* New styles for timeline images (Updated for precise symmetry) */
-        .timeline-image-wrapper {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            display: flex;
-            gap: 12px;
-            opacity: 1;
-            z-index: 5;
-            pointer-events: auto;
-            width: 100%;
-            align-items: center;
-        }
-        .timeline-item.left .timeline-image-wrapper {
-            left: 100%;
-            padding-left: 30px;
-            padding-right: 30px;
-            justify-content: flex-start;
-        }
-        .timeline-item.right .timeline-image-wrapper {
-            right: 100%;
-            padding-right: 30px;
-            padding-left: 30px;
-            justify-content: flex-end;
-        }
-        .timeline-image-wrapper img {
-            height: 130px;
-            width: calc(25% - 9px); /* Exactly 1/4 of width minus gap */
-            flex-shrink: 0;
-            flex-grow: 0;
-            object-fit: cover;
-            border-radius: 0.75rem;
-            border: 1px solid rgba(115, 142, 120, 0.2);
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        .timeline-image-wrapper img:hover {
-            transform: scale(1.05);
-            box-shadow: 0 10px 15px rgba(0,0,0,0.1);
-            z-index: 10;
-            position: relative;
-        }
 
         @media screen and (max-width: 768px) {
             .timeline-container::after { left: 31px; }
@@ -298,8 +255,6 @@
             .timeline-item.left, .timeline-item.right { justify-content: flex-start; }
             .timeline-item.left::after, .timeline-item.right::after { left: 24px; top: 20px; }
             .exp-card { max-width: 100%; }
-            /* Hide images on mobile for cleaner layout or position them differently */
-            .timeline-image-wrapper { display: none; }
         }
 
         /* ORGANIZATION EXPANDING CARDS */
@@ -367,6 +322,36 @@
             flex-direction: column;
             justify-content: flex-end;
             height: 100%;
+            transition: padding 0.4s ease;
+        }
+
+        /* FIXED: Inactive Card Text Symmetry & Centering */
+        .org-card.active .org-content {
+            align-items: flex-start;
+            text-align: left;
+        }
+        .org-card:not(.active) .org-content {
+            align-items: center;
+            text-align: center;
+            padding: 2rem 0.75rem; 
+        }
+        .org-card .org-content > h3 {
+            transition: opacity 0.3s ease, max-height 0.3s ease, margin 0.3s ease;
+            max-height: 150px;
+            overflow: hidden;
+        }
+        .org-card:not(.active) .org-content > h3 {
+            opacity: 0;
+            max-height: 0;
+            margin-bottom: 0;
+        }
+        .org-card .org-content > p {
+            transition: font-size 0.3s ease;
+        }
+        .org-card:not(.active) .org-content > p {
+            word-break: break-word;
+            font-size: 0.75rem !important; 
+            line-height: 1.4;
         }
 
         .org-details {
@@ -2414,19 +2399,22 @@
                     for (let i = 0; i < maxImages; i++) {
                         // Avoid placeholders if possible, or display them if it's the only image
                         if(exp.images[i] && !exp.images[i].includes("placehold.co") || maxImages === 1) {
-                            imageThumbnailsHTML += `<img src="${exp.images[i]}" alt="Experience image ${i+1}" loading="lazy">`;
+                            imageThumbnailsHTML += `<img src="${exp.images[i]}" alt="Experience image ${i+1}" class="flex-1 w-full h-20 sm:h-24 object-cover rounded-lg border border-gray-100 shadow-sm" loading="lazy">`;
                         }
                     }
+                }
+
+                let mediaContainerHTML = '';
+                if(imageThumbnailsHTML.trim() !== '') {
+                    mediaContainerHTML = `
+                    <div class="mt-4 flex gap-2 w-full pointer-events-none">
+                        ${imageThumbnailsHTML}
+                    </div>`;
                 }
 
                 const cardHTML = `
                 <div class="timeline-item ${isLeft ? 'left' : 'right'} group/exp cursor-pointer" onclick="openExpModal(${exp.id})">
                     
-                    <!-- NEW: Timeline Image Thumbnails Wrapper -->
-                    <div class="timeline-image-wrapper">
-                        ${imageThumbnailsHTML}
-                    </div>
-
                     <div class="exp-card p-5 sm:p-6 relative bg-white z-20">
                         
                         <!-- Admin Controls -->
@@ -2451,6 +2439,8 @@
                         <span class="inline-flex items-center gap-1.5 text-xs font-bold text-eco-sageHover group-hover/exp:translate-x-2 transition-transform duration-300 pointer-events-none mt-3">
                             Click to view details <i class="fas fa-arrow-right"></i>
                         </span>
+                        
+                        ${mediaContainerHTML}
                     </div>
                 </div>
                 `;
