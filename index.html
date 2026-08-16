@@ -186,6 +186,7 @@
         }
         .timeline-item {
             padding: 8px 30px; 
+            margin-bottom: 4rem; /* Added margin to space out experiences clearly */
             position: relative;
             background-color: inherit;
             width: 50%; 
@@ -293,7 +294,7 @@
 
         @media screen and (max-width: 768px) {
             .timeline-container::after { left: 31px; }
-            .timeline-item { width: 100%; padding-left: 70px; padding-right: 20px; }
+            .timeline-item { width: 100%; padding-left: 70px; padding-right: 20px; margin-bottom: 3rem; }
             .timeline-item.right { left: 0%; }
             .timeline-item.left, .timeline-item.right { justify-content: flex-start; }
             .timeline-item.left::after, .timeline-item.right::after { left: 24px; top: 20px; }
@@ -360,13 +361,16 @@
             bottom: 0;
             left: 0;
             right: 0;
-            padding: 2rem;
+            padding: 1.5rem; /* Adjusted for better text fit */
             z-index: 10;
             color: white;
             display: flex;
             flex-direction: column;
             justify-content: flex-end;
             height: 100%;
+        }
+        @media (min-width: 640px) {
+            .org-content { padding: 2rem; }
         }
 
         .org-details {
@@ -2845,15 +2849,15 @@
 
                     <img src="${org.bgImage}" class="org-bg-img" alt="${org.name}">
                     
-                    <div class="org-content">
-                        <h3 class="font-serif text-2xl sm:text-3xl font-bold mb-1 leading-tight">${org.role}</h3>
-                        <p class="text-eco-visionAccent font-medium text-sm tracking-wider uppercase">${org.name}</p>
+                    <div class="org-content w-full text-left">
+                        <h3 class="font-serif text-lg sm:text-xl font-bold mb-1.5 leading-snug break-words w-full">${org.role}</h3>
+                        <p class="text-eco-visionAccent font-semibold text-xs sm:text-sm tracking-wide uppercase truncate w-full pr-4">${org.name}</p>
                         
-                        <div class="org-details">
-                            <p class="text-white/80 text-sm mb-3 flex items-center gap-2"><i class="far fa-calendar-alt text-eco-visionAccent"></i> ${org.date}</p>
-                            <p class="text-gray-300 text-sm font-light leading-relaxed mb-4">${org.desc}</p>
+                        <div class="org-details w-full">
+                            <p class="text-white/80 text-xs sm:text-sm mb-3 flex items-center gap-2"><i class="far fa-calendar-alt text-eco-visionAccent"></i> ${org.date}</p>
+                            <p class="text-gray-300 text-xs sm:text-sm font-light leading-relaxed mb-4 line-clamp-3">${org.desc}</p>
                             
-                            <button class="mt-4 px-4 py-2 bg-eco-visionAccent text-eco-visionDark font-bold text-xs rounded-lg hover:bg-white transition flex items-center gap-2 w-max shadow-sm pointer-events-none">
+                            <button class="mt-4 px-4 py-2 bg-eco-visionAccent text-eco-visionDark font-bold text-[10px] sm:text-xs rounded-lg hover:bg-white transition flex items-center gap-2 w-max shadow-sm pointer-events-none">
                                 View Details <i class="fas fa-arrow-right"></i>
                             </button>
                         </div>
@@ -3851,3 +3855,4 @@
     </script>
 </body>
 </html>
+```eof
