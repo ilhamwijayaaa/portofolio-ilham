@@ -247,80 +247,6 @@
             cursor: pointer;
             border-radius: 4px;
         }
-        
-        /* New styles for timeline images (Updated with Grouping Container & Connector) */
-        .timeline-image-wrapper {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            display: flex;
-            gap: 12px;
-            opacity: 1;
-            z-index: 5;
-            pointer-events: auto;
-            width: calc(100% - 30px);
-            align-items: center;
-            padding: 12px;
-            background: rgba(255, 255, 255, 0.4);
-            backdrop-filter: blur(8px);
-            border: 1px solid rgba(115, 142, 120, 0.15);
-            border-radius: 1.25rem;
-            transition: all 0.3s ease;
-        }
-        .timeline-item.left .timeline-image-wrapper {
-            left: calc(100% + 30px);
-            justify-content: flex-start;
-        }
-        .timeline-item.right .timeline-image-wrapper {
-            right: calc(100% + 30px);
-            justify-content: flex-end;
-        }
-
-        /* Connecting Dashed Line */
-        .timeline-image-wrapper::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 30px;
-            height: 2px;
-            background-image: linear-gradient(to right, #738e78 50%, transparent 50%);
-            background-size: 8px 100%;
-            background-repeat: repeat-x;
-            opacity: 0.3;
-            transition: opacity 0.3s ease;
-            z-index: -1;
-        }
-        .timeline-item.left .timeline-image-wrapper::before { left: -30px; }
-        .timeline-item.right .timeline-image-wrapper::before { right: -30px; }
-
-        /* Unified hover effect: Sync highlight */
-        .timeline-item:hover .timeline-image-wrapper {
-            background: rgba(255, 255, 255, 0.9);
-            border-color: rgba(115, 142, 120, 0.4);
-            box-shadow: 0 10px 20px -5px rgba(115, 142, 120, 0.1);
-        }
-        .timeline-item:hover .timeline-image-wrapper::before {
-            opacity: 1;
-        }
-
-        .timeline-image-wrapper img {
-            height: 110px;
-            width: calc(25% - 9px); 
-            flex-shrink: 1;
-            flex-grow: 0;
-            object-fit: cover;
-            border-radius: 0.5rem;
-            border: 1px solid rgba(115, 142, 120, 0.2);
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        .timeline-image-wrapper img:hover {
-            transform: scale(1.15);
-            box-shadow: 0 10px 15px rgba(0,0,0,0.1);
-            z-index: 10;
-            position: relative;
-        }
 
         @media screen and (max-width: 768px) {
             .timeline-container::after { left: 31px; }
@@ -329,8 +255,6 @@
             .timeline-item.left, .timeline-item.right { justify-content: flex-start; }
             .timeline-item.left::after, .timeline-item.right::after { left: 24px; top: 20px; }
             .exp-card { max-width: 100%; }
-            /* Hide images on mobile for cleaner layout or position them differently */
-            .timeline-image-wrapper { display: none; }
         }
 
         /* ORGANIZATION EXPANDING CARDS */
@@ -2445,15 +2369,15 @@
                     for (let i = 0; i < maxImages; i++) {
                         // Avoid placeholders if possible, or display them if it's the only image
                         if(exp.images[i] && !exp.images[i].includes("placehold.co") || maxImages === 1) {
-                            imageThumbnailsHTML += `<img src="${exp.images[i]}" alt="Experience image ${i+1}" loading="lazy">`;
+                            imageThumbnailsHTML += `<img src="${exp.images[i]}" alt="Experience image ${i+1}" class="flex-1 w-full h-20 sm:h-24 object-cover rounded-lg border border-gray-100 shadow-sm" loading="lazy">`;
                         }
                     }
                 }
 
-                let imageWrapperHTML = '';
+                let mediaContainerHTML = '';
                 if(imageThumbnailsHTML.trim() !== '') {
-                    imageWrapperHTML = `
-                    <div class="timeline-image-wrapper">
+                    mediaContainerHTML = `
+                    <div class="mt-4 flex gap-2 w-full pointer-events-none">
                         ${imageThumbnailsHTML}
                     </div>`;
                 }
@@ -2461,9 +2385,6 @@
                 const cardHTML = `
                 <div class="timeline-item ${isLeft ? 'left' : 'right'} group/exp cursor-pointer" onclick="openExpModal(${exp.id})">
                     
-                    <!-- Timeline Image Thumbnails Wrapper -->
-                    ${imageWrapperHTML}
-
                     <div class="exp-card p-5 sm:p-6 relative bg-white z-20">
                         
                         <!-- Admin Controls -->
@@ -2488,6 +2409,8 @@
                         <span class="inline-flex items-center gap-1.5 text-xs font-bold text-eco-sageHover group-hover/exp:translate-x-2 transition-transform duration-300 pointer-events-none mt-3">
                             Click to view details <i class="fas fa-arrow-right"></i>
                         </span>
+                        
+                        ${mediaContainerHTML}
                     </div>
                 </div>
                 `;
