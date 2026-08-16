@@ -248,7 +248,7 @@
             border-radius: 4px;
         }
         
-        /* New styles for timeline images (Updated for precise symmetry) */
+        /* New styles for timeline images (Updated with Grouping Container & Connector) */
         .timeline-image-wrapper {
             position: absolute;
             top: 50%;
@@ -258,34 +258,65 @@
             opacity: 1;
             z-index: 5;
             pointer-events: auto;
-            width: 100%;
+            width: calc(100% - 30px);
             align-items: center;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(115, 142, 120, 0.15);
+            border-radius: 1.25rem;
+            transition: all 0.3s ease;
         }
         .timeline-item.left .timeline-image-wrapper {
-            left: 100%;
-            padding-left: 30px;
-            padding-right: 30px;
+            left: calc(100% + 30px);
             justify-content: flex-start;
         }
         .timeline-item.right .timeline-image-wrapper {
-            right: 100%;
-            padding-right: 30px;
-            padding-left: 30px;
+            right: calc(100% + 30px);
             justify-content: flex-end;
         }
+
+        /* Connecting Dashed Line */
+        .timeline-image-wrapper::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 30px;
+            height: 2px;
+            background-image: linear-gradient(to right, #738e78 50%, transparent 50%);
+            background-size: 8px 100%;
+            background-repeat: repeat-x;
+            opacity: 0.3;
+            transition: opacity 0.3s ease;
+            z-index: -1;
+        }
+        .timeline-item.left .timeline-image-wrapper::before { left: -30px; }
+        .timeline-item.right .timeline-image-wrapper::before { right: -30px; }
+
+        /* Unified hover effect: Sync highlight */
+        .timeline-item:hover .timeline-image-wrapper {
+            background: rgba(255, 255, 255, 0.9);
+            border-color: rgba(115, 142, 120, 0.4);
+            box-shadow: 0 10px 20px -5px rgba(115, 142, 120, 0.1);
+        }
+        .timeline-item:hover .timeline-image-wrapper::before {
+            opacity: 1;
+        }
+
         .timeline-image-wrapper img {
-            height: 130px;
-            width: calc(25% - 9px); /* Exactly 1/4 of width minus gap */
-            flex-shrink: 0;
+            height: 110px;
+            width: calc(25% - 9px); 
+            flex-shrink: 1;
             flex-grow: 0;
             object-fit: cover;
-            border-radius: 0.75rem;
+            border-radius: 0.5rem;
             border: 1px solid rgba(115, 142, 120, 0.2);
             box-shadow: 0 4px 6px rgba(0,0,0,0.05);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
         .timeline-image-wrapper img:hover {
-            transform: scale(1.05);
+            transform: scale(1.15);
             box-shadow: 0 10px 15px rgba(0,0,0,0.1);
             z-index: 10;
             position: relative;
@@ -2419,13 +2450,19 @@
                     }
                 }
 
+                let imageWrapperHTML = '';
+                if(imageThumbnailsHTML.trim() !== '') {
+                    imageWrapperHTML = `
+                    <div class="timeline-image-wrapper">
+                        ${imageThumbnailsHTML}
+                    </div>`;
+                }
+
                 const cardHTML = `
                 <div class="timeline-item ${isLeft ? 'left' : 'right'} group/exp cursor-pointer" onclick="openExpModal(${exp.id})">
                     
-                    <!-- NEW: Timeline Image Thumbnails Wrapper -->
-                    <div class="timeline-image-wrapper">
-                        ${imageThumbnailsHTML}
-                    </div>
+                    <!-- Timeline Image Thumbnails Wrapper -->
+                    ${imageWrapperHTML}
 
                     <div class="exp-card p-5 sm:p-6 relative bg-white z-20">
                         
