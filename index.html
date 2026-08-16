@@ -325,7 +325,7 @@
             transition: padding 0.4s ease;
         }
 
-        /* FIXED: Inactive Card Text Symmetry & Centering */
+        /* INACTIVE CARD: Show Position (h3), Hide Org Name (p) */
         .org-card.active .org-content {
             align-items: flex-start;
             text-align: left;
@@ -336,22 +336,33 @@
             padding: 2rem 0.75rem; 
         }
         .org-card .org-content > h3 {
-            transition: opacity 0.3s ease, max-height 0.3s ease, margin 0.3s ease;
+            transition: all 0.4s ease;
             max-height: 150px;
             overflow: hidden;
+            width: 100%;
         }
         .org-card:not(.active) .org-content > h3 {
-            opacity: 0;
-            max-height: 0;
+            font-size: 1.25rem !important; /* Dibuat besar dan tebal */
+            line-height: 1.3;
+            word-wrap: break-word;
+            white-space: normal;
             margin-bottom: 0;
+            opacity: 1;
         }
         .org-card .org-content > p {
-            transition: font-size 0.3s ease;
+            transition: all 0.4s ease;
+            overflow: hidden;
+            width: 100%;
         }
         .org-card:not(.active) .org-content > p {
-            word-break: break-word;
-            font-size: 0.75rem !important; 
-            line-height: 1.4;
+            opacity: 0;
+            max-height: 0;
+            margin-bottom: 0 !important;
+            padding: 0 !important;
+        }
+        .org-card.active .org-content > p {
+            opacity: 1;
+            max-height: 50px; 
         }
 
         .org-details {
