@@ -186,7 +186,7 @@
         }
         .timeline-item {
             padding: 8px 30px; 
-            margin-bottom: 4rem; /* Added margin to space out experiences clearly */
+            margin-bottom: 2.5rem; /* Reduced margin slightly to bring them closer but still separated */
             position: relative;
             background-color: inherit;
             width: 50%; 
@@ -294,7 +294,7 @@
 
         @media screen and (max-width: 768px) {
             .timeline-container::after { left: 31px; }
-            .timeline-item { width: 100%; padding-left: 70px; padding-right: 20px; margin-bottom: 3rem; }
+            .timeline-item { width: 100%; padding-left: 70px; padding-right: 20px; margin-bottom: 2rem; }
             .timeline-item.right { left: 0%; }
             .timeline-item.left, .timeline-item.right { justify-content: flex-start; }
             .timeline-item.left::after, .timeline-item.right::after { left: 24px; top: 20px; }
@@ -361,7 +361,7 @@
             bottom: 0;
             left: 0;
             right: 0;
-            padding: 1.5rem; /* Adjusted for better text fit */
+            padding: 1.5rem 1rem; /* Reduced side padding to shift content to the left */
             z-index: 10;
             color: white;
             display: flex;
@@ -370,7 +370,7 @@
             height: 100%;
         }
         @media (min-width: 640px) {
-            .org-content { padding: 2rem; }
+            .org-content { padding: 2rem 1.5rem; }
         }
 
         .org-details {
@@ -384,7 +384,7 @@
         .org-card.active .org-details {
             max-height: 200px;
             opacity: 1;
-            margin-top: 1rem;
+            margin-top: 0.75rem;
             transform: translateY(0);
         }
 
@@ -2850,15 +2850,15 @@
                     <img src="${org.bgImage}" class="org-bg-img" alt="${org.name}">
                     
                     <div class="org-content w-full text-left">
-                        <h3 class="font-serif text-lg sm:text-xl font-bold mb-1.5 leading-snug break-words w-full">${org.role}</h3>
-                        <p class="text-eco-visionAccent font-semibold text-xs sm:text-sm tracking-wide uppercase truncate w-full pr-4">${org.name}</p>
+                        <h3 class="font-serif text-base sm:text-lg font-bold mb-1 leading-snug w-full">${org.role}</h3>
+                        <p class="text-eco-visionAccent font-semibold text-[10px] sm:text-xs tracking-wide uppercase w-full pr-2">${org.name}</p>
                         
                         <div class="org-details w-full">
-                            <p class="text-white/80 text-xs sm:text-sm mb-3 flex items-center gap-2"><i class="far fa-calendar-alt text-eco-visionAccent"></i> ${org.date}</p>
-                            <p class="text-gray-300 text-xs sm:text-sm font-light leading-relaxed mb-4 line-clamp-3">${org.desc}</p>
+                            <p class="text-white/80 text-xs mb-3 flex items-center gap-2"><i class="far fa-calendar-alt text-eco-visionAccent"></i> ${org.date}</p>
+                            <p class="text-gray-300 text-[11px] sm:text-xs font-light leading-relaxed mb-3 line-clamp-3">${org.desc}</p>
                             
-                            <button class="mt-4 px-4 py-2 bg-eco-visionAccent text-eco-visionDark font-bold text-[10px] sm:text-xs rounded-lg hover:bg-white transition flex items-center gap-2 w-max shadow-sm pointer-events-none">
-                                View Details <i class="fas fa-arrow-right"></i>
+                            <button class="mt-2 px-3 py-1.5 bg-eco-visionAccent text-eco-visionDark font-bold text-[10px] rounded hover:bg-white transition flex items-center gap-2 w-max shadow-sm pointer-events-none">
+                                View Details <i class="fas fa-arrow-right text-[10px]"></i>
                             </button>
                         </div>
                     </div>
