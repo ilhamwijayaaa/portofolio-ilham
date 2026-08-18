@@ -1408,8 +1408,7 @@
                 </div>
                 
                 <!-- Right: Image Gallery Slider -->
-                <!-- MODIFIED: Proporsi diseimbangkan menjadi 65% untuk ruang gambar slide -->
-                <div class="w-full lg:w-[65%] xl:w-[70%] p-4 sm:p-8 lg:p-10 flex flex-col justify-center items-center bg-[#f4f7f5] relative z-[91] overflow-hidden">
+                <div class="w-full lg:w-[65%] xl:w-[70%] p-4 sm:p-8 lg:p-10 flex flex-col justify-center items-center bg-[#f4f7f5] relative z-[91] overflow-hidden min-h-0">
                     
                     <!-- Photo Management Toolbar -->
                     <div class="admin-control hidden absolute top-4 right-4 flex gap-2 z-[93] bg-white p-1.5 rounded-xl shadow-sm border border-gray-100">
@@ -1421,26 +1420,22 @@
                         </button>
                     </div>
 
-                    <!-- MODIFIED: Dihapus aspect-video dan diganti dengan aspect ratio kustom berdasarkan gambar referensi (approx. 1.77:1 atau 16:9).
-                         Namun, untuk memastikan gambar dari PPT (yang mungkin memiliki sedikit variasi) selalu pas penuh tanpa jarak putih,
-                         kita pastikan lebar container 100% dan gambar diset menjadi object-cover JIKA kita ingin memotong pinggirannya sedikit,
-                         ATAU tetap object-contain tapi dengan bg container yang menyatu.
-                         Karena Anda ingin "full" persis seperti gambar `image_30dfa8.jpg` di mana slide memenuhi batas,
-                         saya atur rasionya menjadi tepat 16:9 dan menggunakan object-fill atau object-contain agar tidak terpotong. -->
-                    <div class="w-full max-w-[1200px] aspect-[16/9] flex items-center justify-center rounded-2xl overflow-hidden shadow-lg relative group bg-transparent border border-gray-100 z-[91] mx-auto" id="modalProjGalleryContainer">
+                    <!-- THE SHRINK-WRAP CONTAINER (Pas dengan ukuran rasio gambar) -->
+                    <div class="relative mx-auto flex justify-center items-center group max-w-full" id="modalProjGalleryContainer" style="width: fit-content;">
                         
-                        <!-- Gambar diset w-full h-full agar mengisi penuh container 16:9 tersebut -->
-                        <img id="modalProjImage" src="https://upload.wikimedia.org/wikipedia/commons/c/ca/1x1.png" class="w-full h-full object-cover transition-opacity duration-300 z-[91]">
+                        <!-- Gambar disetting agar dinamis mempertahankan proporsinya (w-auto h-auto) tanpa crop atau padding kosong -->
+                        <img id="modalProjImage" src="https://upload.wikimedia.org/wikipedia/commons/c/ca/1x1.png" class="block w-auto h-auto max-w-full max-h-[65vh] lg:max-h-[82vh] rounded-xl shadow-[0_15px_40px_rgba(0,0,0,0.15)] border border-gray-200 transition-opacity duration-300 z-[91]">
                         
-                        <button onclick="prevProjImage()" class="absolute left-3 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white hover:bg-eco-sageLight text-eco-textMain shadow-md flex items-center justify-center transition-all z-[93] focus:outline-none hover:scale-110"><i class="fas fa-chevron-left text-base pointer-events-none"></i></button>
-                        <button onclick="nextProjImage()" class="absolute right-3 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white hover:bg-eco-sageLight text-eco-textMain shadow-md flex items-center justify-center transition-all z-[93] focus:outline-none hover:scale-110"><i class="fas fa-chevron-right text-base pointer-events-none"></i></button>
+                        <!-- Tombol panah sekarang terjangkar pas di sisi kiri & kanan gambar asli -->
+                        <button onclick="prevProjImage()" class="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white/90 hover:bg-white text-eco-textMain shadow-md flex items-center justify-center transition-all z-[93] focus:outline-none hover:scale-110 backdrop-blur-sm border border-gray-100"><i class="fas fa-chevron-left text-sm sm:text-base pointer-events-none"></i></button>
+                        <button onclick="nextProjImage()" class="absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white/90 hover:bg-white text-eco-textMain shadow-md flex items-center justify-center transition-all z-[93] focus:outline-none hover:scale-110 backdrop-blur-sm border border-gray-100"><i class="fas fa-chevron-right text-sm sm:text-base pointer-events-none"></i></button>
 
-                        <div class="absolute bottom-6 left-1/2 -translate-x-1/2 bg-black/70 backdrop-blur-sm px-6 py-2 rounded-full text-white text-xs font-medium text-center shadow-lg border border-white/10 transition-opacity duration-300 z-[92]" id="modalProjImageCaption">
+                        <div class="absolute bottom-6 left-1/2 -translate-x-1/2 bg-black/75 backdrop-blur-md px-6 py-2 rounded-full text-white text-xs font-medium text-center shadow-lg border border-white/15 transition-opacity duration-300 z-[92]" id="modalProjImageCaption">
                             Caption
                         </div>
                     </div>
                     
-                    <div class="flex gap-2.5 mt-6 z-[91]" id="modalProjGalleryDots">
+                    <div class="flex gap-2.5 mt-6 z-[91] shrink-0" id="modalProjGalleryDots">
                         <!-- Dots injected here -->
                     </div>
                 </div>
