@@ -1360,8 +1360,9 @@
     </div>
 
     <!-- MODAL: PROJECT DETAILS -->
-    <div id="projectDetailModal" class="fixed inset-0 z-[90] hidden flex items-center justify-center bg-eco-textMain/90 backdrop-blur-md p-4 sm:p-6 transition-all duration-300 opacity-0" onclick="closeProjectModal()">
-        <div class="bg-white rounded-[2rem] w-full max-w-6xl max-h-[95vh] shadow-[0_30px_60px_rgba(0,0,0,0.4)] flex flex-col overflow-hidden border border-gray-100 scale-95 transition-transform duration-300 z-[91] relative" id="projModalContent" onclick="event.stopPropagation()">
+    <div id="projectDetailModal" class="fixed inset-0 z-[90] hidden flex items-center justify-center bg-eco-textMain/90 backdrop-blur-md p-2 sm:p-6 transition-all duration-300 opacity-0" onclick="closeProjectModal()">
+        <!-- MODIFIED: Diperlebar menjadi w-[96vw] dan max-w-[1600px] agar modal super lega -->
+        <div class="bg-white rounded-[2rem] w-[96vw] max-w-[1600px] max-h-[96vh] shadow-[0_30px_60px_rgba(0,0,0,0.4)] flex flex-col overflow-hidden border border-gray-100 scale-95 transition-transform duration-300 z-[91] relative" id="projModalContent" onclick="event.stopPropagation()">
             
             <!-- Modal Header -->
             <div class="bg-eco-textMain text-white p-6 sm:p-8 flex justify-between items-start relative shrink-0 z-[91]">
@@ -1381,8 +1382,10 @@
             
             <!-- Modal Body -->
             <div class="flex flex-col lg:flex-row flex-1 overflow-hidden bg-[#f8faf9] z-[91]">
+                
                 <!-- Left: Description (Bullets) & PDF Button -->
-                <div class="w-full lg:w-1/2 p-6 sm:p-8 overflow-y-auto custom-scrollbar border-r border-gray-200/60 z-[91] flex flex-col">
+                <!-- MODIFIED: Porsi overview dikecilkan menjadi 30% atau 25% (1/4) dari lebar total -->
+                <div class="w-full lg:w-[30%] xl:w-[25%] p-6 sm:p-8 overflow-y-auto custom-scrollbar border-r border-gray-200/60 z-[91] flex flex-col bg-white">
                     <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-eco-sageLight/50 text-eco-sageHover font-bold text-[10px] tracking-widest uppercase border border-eco-sageLight mb-6 w-max">
                         Project Overview
                     </div>
@@ -1404,8 +1407,10 @@
                     </div>
                 </div>
                 
-                <!-- Right: Image Gallery Slider (UPDATED RATIO) -->
-                <div class="w-full lg:w-1/2 p-6 sm:p-8 flex flex-col justify-center items-center bg-white relative z-[91]">
+                <!-- Right: Image Gallery Slider -->
+                <!-- MODIFIED: Porsi gambar diperbesar menjadi 70% atau 75% (3/4) dari lebar total -->
+                <div class="w-full lg:w-[70%] xl:w-[75%] p-4 sm:p-8 lg:p-10 flex flex-col justify-center items-center bg-[#f4f7f5] relative z-[91] overflow-hidden">
+                    
                     <!-- Photo Management Toolbar -->
                     <div class="admin-control hidden absolute top-4 right-4 flex gap-2 z-[93] bg-white p-1.5 rounded-xl shadow-sm border border-gray-100">
                         <button onclick="directUploadProjImage()" class="bg-eco-sagePrimary hover:bg-eco-sageHover text-white px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-2 relative" title="Add New Photo">
@@ -1416,19 +1421,21 @@
                         </button>
                     </div>
 
-                    <!-- UPDATED: aspect-[16/9] to match Canva slides perfectly without cropping -->
-                    <div class="w-full aspect-[16/9] rounded-2xl overflow-hidden shadow-soft relative group bg-gray-50 border border-gray-100 z-[91]" id="modalProjGalleryContainer">
-                        <!-- UPDATED: object-contain instead of object-cover to ensure the whole slide is visible even if ratio is slightly off -->
+                    <!-- MODIFIED: Container 16:9 disempurnakan dengan flex & max-h agar tidak melewati batas bawah layar pada monitor lebar -->
+                    <div class="w-full aspect-[16/9] max-h-[75vh] flex items-center justify-center rounded-2xl overflow-hidden shadow-lg relative group bg-gray-100 border border-gray-200 z-[91] mx-auto" id="modalProjGalleryContainer">
+                        
+                        <!-- Gambar akan menempati ruang secara optimal tanpa terpotong (object-contain) -->
                         <img id="modalProjImage" src="https://upload.wikimedia.org/wikipedia/commons/c/ca/1x1.png" class="w-full h-full object-contain transition-opacity duration-300 z-[91]">
                         
-                        <button onclick="prevProjImage()" class="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white hover:bg-eco-sageLight text-eco-textMain shadow-md flex items-center justify-center transition-all z-[93] focus:outline-none hover:scale-110"><i class="fas fa-chevron-left text-sm pointer-events-none"></i></button>
-                        <button onclick="nextProjImage()" class="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white hover:bg-eco-sageLight text-eco-textMain shadow-md flex items-center justify-center transition-all z-[93] focus:outline-none hover:scale-110"><i class="fas fa-chevron-right text-sm pointer-events-none"></i></button>
+                        <button onclick="prevProjImage()" class="absolute left-3 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white hover:bg-eco-sageLight text-eco-textMain shadow-md flex items-center justify-center transition-all z-[93] focus:outline-none hover:scale-110"><i class="fas fa-chevron-left text-base pointer-events-none"></i></button>
+                        <button onclick="nextProjImage()" class="absolute right-3 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white hover:bg-eco-sageLight text-eco-textMain shadow-md flex items-center justify-center transition-all z-[93] focus:outline-none hover:scale-110"><i class="fas fa-chevron-right text-base pointer-events-none"></i></button>
 
-                        <div class="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/60 backdrop-blur-sm px-4 py-1.5 rounded-full text-white text-[10px] sm:text-xs font-medium text-center shadow-lg border border-white/10 transition-opacity duration-300 z-[92]" id="modalProjImageCaption">
+                        <div class="absolute bottom-6 left-1/2 -translate-x-1/2 bg-black/70 backdrop-blur-sm px-6 py-2 rounded-full text-white text-xs font-medium text-center shadow-lg border border-white/10 transition-opacity duration-300 z-[92]" id="modalProjImageCaption">
                             Caption
                         </div>
                     </div>
-                    <div class="flex gap-2 mt-4 z-[91]" id="modalProjGalleryDots">
+                    
+                    <div class="flex gap-2.5 mt-6 z-[91]" id="modalProjGalleryDots">
                         <!-- Dots injected here -->
                     </div>
                 </div>
