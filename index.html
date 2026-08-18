@@ -1384,8 +1384,8 @@
             <div class="flex flex-col lg:flex-row flex-1 overflow-hidden bg-[#f8faf9] z-[91]">
                 
                 <!-- Left: Description (Bullets) & PDF Button -->
-                <!-- MODIFIED: Porsi overview dikecilkan menjadi 30% atau 25% (1/4) dari lebar total -->
-                <div class="w-full lg:w-[30%] xl:w-[25%] p-6 sm:p-8 overflow-y-auto custom-scrollbar border-r border-gray-200/60 z-[91] flex flex-col bg-white">
+                <!-- MODIFIED: Proporsi diseimbangkan menjadi 35% agar lebar gambar menjadi pas dan natural -->
+                <div class="w-full lg:w-[35%] xl:w-[30%] p-6 sm:p-8 overflow-y-auto custom-scrollbar border-r border-gray-200/60 z-[91] flex flex-col bg-white">
                     <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-eco-sageLight/50 text-eco-sageHover font-bold text-[10px] tracking-widest uppercase border border-eco-sageLight mb-6 w-max">
                         Project Overview
                     </div>
@@ -1408,8 +1408,8 @@
                 </div>
                 
                 <!-- Right: Image Gallery Slider -->
-                <!-- MODIFIED: Porsi gambar diperbesar menjadi 70% atau 75% (3/4) dari lebar total -->
-                <div class="w-full lg:w-[70%] xl:w-[75%] p-4 sm:p-8 lg:p-10 flex flex-col justify-center items-center bg-[#f4f7f5] relative z-[91] overflow-hidden">
+                <!-- MODIFIED: Proporsi diseimbangkan menjadi 65% untuk ruang gambar slide -->
+                <div class="w-full lg:w-[65%] xl:w-[70%] p-4 sm:p-8 lg:p-10 flex flex-col justify-center items-center bg-[#f4f7f5] relative z-[91] overflow-hidden">
                     
                     <!-- Photo Management Toolbar -->
                     <div class="admin-control hidden absolute top-4 right-4 flex gap-2 z-[93] bg-white p-1.5 rounded-xl shadow-sm border border-gray-100">
@@ -1421,10 +1421,10 @@
                         </button>
                     </div>
 
-                    <!-- MODIFIED: Container 16:9 disempurnakan dengan flex & max-h agar tidak melewati batas bawah layar pada monitor lebar -->
-                    <div class="w-full aspect-[16/9] max-h-[75vh] flex items-center justify-center rounded-2xl overflow-hidden shadow-lg relative group bg-gray-100 border border-gray-200 z-[91] mx-auto" id="modalProjGalleryContainer">
+                    <!-- MODIFIED: Dihapus class max-h-[75vh], dipastikan terkunci 100% pada rasio 16:9 agar tidak squished dan warna background jadi putih -->
+                    <div class="w-full max-w-[1100px] aspect-video flex items-center justify-center rounded-2xl overflow-hidden shadow-lg relative group bg-white border border-gray-100 z-[91] mx-auto" id="modalProjGalleryContainer">
                         
-                        <!-- Gambar akan menempati ruang secara optimal tanpa terpotong (object-contain) -->
+                        <!-- Gambar menempati ruang tanpa terpotong (object-contain) -->
                         <img id="modalProjImage" src="https://upload.wikimedia.org/wikipedia/commons/c/ca/1x1.png" class="w-full h-full object-contain transition-opacity duration-300 z-[91]">
                         
                         <button onclick="prevProjImage()" class="absolute left-3 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white hover:bg-eco-sageLight text-eco-textMain shadow-md flex items-center justify-center transition-all z-[93] focus:outline-none hover:scale-110"><i class="fas fa-chevron-left text-base pointer-events-none"></i></button>
