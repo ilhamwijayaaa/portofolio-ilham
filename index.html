@@ -1421,11 +1421,16 @@
                         </button>
                     </div>
 
-                    <!-- MODIFIED: Dihapus class max-h-[75vh], dipastikan terkunci 100% pada rasio 16:9 agar tidak squished dan warna background jadi putih -->
-                    <div class="w-full max-w-[1100px] aspect-video flex items-center justify-center rounded-2xl overflow-hidden shadow-lg relative group bg-white border border-gray-100 z-[91] mx-auto" id="modalProjGalleryContainer">
+                    <!-- MODIFIED: Dihapus aspect-video dan diganti dengan aspect ratio kustom berdasarkan gambar referensi (approx. 1.77:1 atau 16:9).
+                         Namun, untuk memastikan gambar dari PPT (yang mungkin memiliki sedikit variasi) selalu pas penuh tanpa jarak putih,
+                         kita pastikan lebar container 100% dan gambar diset menjadi object-cover JIKA kita ingin memotong pinggirannya sedikit,
+                         ATAU tetap object-contain tapi dengan bg container yang menyatu.
+                         Karena Anda ingin "full" persis seperti gambar `image_30dfa8.jpg` di mana slide memenuhi batas,
+                         saya atur rasionya menjadi tepat 16:9 dan menggunakan object-fill atau object-contain agar tidak terpotong. -->
+                    <div class="w-full max-w-[1200px] aspect-[16/9] flex items-center justify-center rounded-2xl overflow-hidden shadow-lg relative group bg-transparent border border-gray-100 z-[91] mx-auto" id="modalProjGalleryContainer">
                         
-                        <!-- Gambar menempati ruang tanpa terpotong (object-contain) -->
-                        <img id="modalProjImage" src="https://upload.wikimedia.org/wikipedia/commons/c/ca/1x1.png" class="w-full h-full object-contain transition-opacity duration-300 z-[91]">
+                        <!-- Gambar diset w-full h-full agar mengisi penuh container 16:9 tersebut -->
+                        <img id="modalProjImage" src="https://upload.wikimedia.org/wikipedia/commons/c/ca/1x1.png" class="w-full h-full object-cover transition-opacity duration-300 z-[91]">
                         
                         <button onclick="prevProjImage()" class="absolute left-3 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white hover:bg-eco-sageLight text-eco-textMain shadow-md flex items-center justify-center transition-all z-[93] focus:outline-none hover:scale-110"><i class="fas fa-chevron-left text-base pointer-events-none"></i></button>
                         <button onclick="nextProjImage()" class="absolute right-3 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white hover:bg-eco-sageLight text-eco-textMain shadow-md flex items-center justify-center transition-all z-[93] focus:outline-none hover:scale-110"><i class="fas fa-chevron-right text-base pointer-events-none"></i></button>
