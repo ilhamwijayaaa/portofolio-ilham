@@ -1404,7 +1404,7 @@
                     </div>
                 </div>
                 
-                <!-- Right: Image Gallery Slider -->
+                <!-- Right: Image Gallery Slider (UPDATED RATIO) -->
                 <div class="w-full lg:w-1/2 p-6 sm:p-8 flex flex-col justify-center items-center bg-white relative z-[91]">
                     <!-- Photo Management Toolbar -->
                     <div class="admin-control hidden absolute top-4 right-4 flex gap-2 z-[93] bg-white p-1.5 rounded-xl shadow-sm border border-gray-100">
@@ -1416,8 +1416,10 @@
                         </button>
                     </div>
 
-                    <div class="w-full aspect-[4/3] rounded-2xl overflow-hidden shadow-soft relative group bg-gray-50 border border-gray-100 z-[91]" id="modalProjGalleryContainer">
-                        <img id="modalProjImage" src="https://upload.wikimedia.org/wikipedia/commons/c/ca/1x1.png" class="w-full h-full object-cover transition-opacity duration-300 z-[91]">
+                    <!-- UPDATED: aspect-[16/9] to match Canva slides perfectly without cropping -->
+                    <div class="w-full aspect-[16/9] rounded-2xl overflow-hidden shadow-soft relative group bg-gray-50 border border-gray-100 z-[91]" id="modalProjGalleryContainer">
+                        <!-- UPDATED: object-contain instead of object-cover to ensure the whole slide is visible even if ratio is slightly off -->
+                        <img id="modalProjImage" src="https://upload.wikimedia.org/wikipedia/commons/c/ca/1x1.png" class="w-full h-full object-contain transition-opacity duration-300 z-[91]">
                         
                         <button onclick="prevProjImage()" class="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white hover:bg-eco-sageLight text-eco-textMain shadow-md flex items-center justify-center transition-all z-[93] focus:outline-none hover:scale-110"><i class="fas fa-chevron-left text-sm pointer-events-none"></i></button>
                         <button onclick="nextProjImage()" class="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white hover:bg-eco-sageLight text-eco-textMain shadow-md flex items-center justify-center transition-all z-[93] focus:outline-none hover:scale-110"><i class="fas fa-chevron-right text-sm pointer-events-none"></i></button>
@@ -1573,7 +1575,16 @@
             if (result.globalData.cvHref) document.getElementById('cvDownloadLink').href = result.globalData.cvHref;
 
             if (result.experiences) experiencesData = result.experiences;
-            if (result.projects) projectsData = result.projects;
+            // UPDATE FOR PROJECTS: Ensure projects have coverImage property
+            if (result.projects) {
+                projectsData = result.projects.map(p => {
+                    // If coverImage is not set, fallback to the first image in gallery
+                    if (!p.coverImage) {
+                        p.coverImage = p.images && p.images.length > 0 ? p.images[0] : "https://placehold.co/600x400?text=No+Cover";
+                    }
+                    return p;
+                });
+            }
             if (result.organizations) organizationsData = result.organizations;
 
             renderTimeline();
@@ -3157,6 +3168,9 @@
                     "Utilized GIS tools including ArcGIS and Digital Shoreline Analysis System (DSAS).",
                     "Modeled future shoreline dynamics to inform coastal management and conservation strategies."
                 ],
+                // Cover image for the 3D slider
+                coverImage: "https://images.unsplash.com/photo-1620127252536-049e9e6231d6?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
+                // Images for the inner gallery
                 images: ["https://images.unsplash.com/photo-1620127252536-049e9e6231d6?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"],
                 captions: ["Shoreline Mapping Map"],
                 pdfUrl: "", 
@@ -3173,6 +3187,7 @@
                     "Assessed plant health, soil biophysical conditions, and plant survival rates.",
                     "Determined the effectiveness of bamboo as a pioneer species for rapid ecological restoration and soil stabilization."
                 ],
+                coverImage: "https://images.unsplash.com/photo-1523730205978-59fd1b2965e3?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
                 images: ["https://images.unsplash.com/photo-1523730205978-59fd1b2965e3?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"],
                 captions: ["Bamboo Evaluation Area"],
                 pdfUrl: "", 
@@ -3189,6 +3204,7 @@
                     "The system replaces manual ledgers, significantly improving data accuracy and accessibility.",
                     "Enabled real-time tracking of plant health, bloom cycles, and geolocation tagging."
                 ],
+                coverImage: "https://images.unsplash.com/photo-1597848212624-a19eb35e2651?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
                 images: ["https://images.unsplash.com/photo-1597848212624-a19eb35e2651?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"],
                 captions: ["Orchid Web System Interface"],
                 pdfUrl: "", 
@@ -3205,6 +3221,7 @@
                     "Estimated the carbon storage and sequestration potential of coastal mangrove forests.",
                     "Provided findings that highlight the economic and ecological value of mangroves in mitigating climate change impacts."
                 ],
+                coverImage: "https://images.unsplash.com/photo-1448375240586-882707db888b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
                 images: ["https://images.unsplash.com/photo-1448375240586-882707db888b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"],
                 captions: ["Mangrove Coastal Area"],
                 pdfUrl: "", 
@@ -3221,6 +3238,7 @@
                     "Analyzed feeding guilds and habitat preferences using ecological indices.",
                     "Contributed to baseline data for conservation management in the Papandayan region."
                 ],
+                coverImage: "https://images.unsplash.com/photo-1555169062-013468b47731?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
                 images: ["https://images.unsplash.com/photo-1555169062-013468b47731?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"],
                 captions: ["Bird Watching Activity"],
                 pdfUrl: "", 
@@ -3237,6 +3255,7 @@
                     "Measured bulk density, particle density, and total porosity.",
                     "Correlated soil physical properties with vegetation cover density."
                 ],
+                coverImage: "https://images.unsplash.com/photo-1581092795360-fd1ca04f0952?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
                 images: ["https://images.unsplash.com/photo-1581092795360-fd1ca04f0952?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"],
                 captions: ["Soil Sample Testing"],
                 pdfUrl: "", 
@@ -3251,6 +3270,9 @@
             track.innerHTML = '';
             
             projectsData.forEach((proj, i) => {
+                // Ensure backward compatibility with existing data
+                const displayImage = proj.coverImage || (proj.images && proj.images.length > 0 ? proj.images[0] : 'https://placehold.co/600x400?text=No+Image');
+
                 const cardHTML = `
                 <div id="proj-card-${i}" class="coverflow-item transition-all duration-700 ease-in-out" onclick="handleCoverflowClick(${i}, ${proj.id})">
                     <div class="coverflow-card-content relative group/proj">
@@ -3268,7 +3290,8 @@
 
                         <!-- Image Area -->
                         <div class="h-56 relative overflow-hidden shrink-0">
-                            <img src="${proj.images[0] || 'https://placehold.co/600x400?text=No+Image'}" alt="${proj.title}" class="w-full h-full object-cover transition duration-700 group-hover/proj:scale-105">
+                            <!-- UPDATED: Use coverImage here -->
+                            <img src="${displayImage}" alt="${proj.title}" class="w-full h-full object-cover transition duration-700 group-hover/proj:scale-105">
                             <div class="absolute inset-0 bg-black/10 opacity-0 group-hover/proj:opacity-100 transition duration-300 pointer-events-none"></div>
                             
                             <!-- Highlight Category -->
@@ -3373,11 +3396,8 @@
                     if(url) {
                         const projIndex = projectsData.findIndex(p => p.id === currentProjIdForFrontImg);
                         if(projIndex !== -1) {
-                            if(projectsData[projIndex].images.length > 0) {
-                                projectsData[projIndex].images[0] = url;
-                            } else {
-                                projectsData[projIndex].images.push(url);
-                            }
+                            // UPDATED: Save to coverImage instead of images[0]
+                            projectsData[projIndex].coverImage = url;
                             buildProjectsCoverflow();
                             markUnsavedChanges();
                         }
@@ -3434,7 +3454,8 @@
                     location: data.nLoc || 'Remote',
                     shortDesc: data.nDesc,
                     fullDesc: ["Project Point 1...", "Project Point 2..."],
-                    images: ["https://placehold.co/800x600?text=Project+Image"],
+                    coverImage: "https://placehold.co/800x600?text=Cover+Image", // Add cover image
+                    images: ["https://placehold.co/1920x1080?text=Slide+1"], // Set default to 16:9
                     captions: ["Placeholder"],
                     pdfUrl: "",
                     pdfName: ""
@@ -3555,7 +3576,7 @@
             const capEl = document.getElementById('modalProjImageCaption');
             const dotsContainer = document.getElementById('modalProjGalleryDots');
 
-            if(proj.images.length > 0) {
+            if(proj.images && proj.images.length > 0) {
                 imgEl.style.opacity = 0;
                 setTimeout(() => {
                     imgEl.src = proj.images[currentProjGalleryIndex];
@@ -3568,12 +3589,12 @@
                     imgEl.style.opacity = 1;
                 }, 150);
             } else {
-                imgEl.src = '';
+                imgEl.src = 'https://placehold.co/1920x1080?text=No+Images';
                 capEl.style.display = 'none';
             }
 
             dotsContainer.innerHTML = '';
-            if(proj.images.length > 1) {
+            if(proj.images && proj.images.length > 1) {
                 proj.images.forEach((_, idx) => {
                     const dot = document.createElement('div');
                     dot.className = `w-2 h-2 rounded-full cursor-pointer transition-all ${idx === currentProjGalleryIndex ? 'bg-eco-sagePrimary w-4' : 'bg-gray-300'}`;
@@ -3588,14 +3609,14 @@
 
         function nextProjImage() {
             const proj = projectsData.find(p => p.id === currentOpenProjId);
-            if(!proj || proj.images.length <= 1) return;
+            if(!proj || !proj.images || proj.images.length <= 1) return;
             currentProjGalleryIndex = (currentProjGalleryIndex + 1) % proj.images.length;
             updateProjGalleryView();
         }
 
         function prevProjImage() {
             const proj = projectsData.find(p => p.id === currentOpenProjId);
-            if(!proj || proj.images.length <= 1) return;
+            if(!proj || !proj.images || proj.images.length <= 1) return;
             currentProjGalleryIndex = (currentProjGalleryIndex - 1 + proj.images.length) % proj.images.length;
             updateProjGalleryView();
         }
@@ -3632,7 +3653,7 @@
             if(!proj) return;
             
             if(proj.images.length <= 1) {
-                alert("Cannot delete the last image. Please add a new one first.");
+                alert("Cannot delete the last image in the gallery.");
                 return;
             }
             
@@ -3643,7 +3664,6 @@
                 }
                 currentProjGalleryIndex = 0; 
                 updateProjGalleryView();
-                buildProjectsCoverflow(); 
                 markUnsavedChanges();
             }
         }
@@ -3658,13 +3678,14 @@
                         const projIndex = projectsData.findIndex(p => p.id === currentOpenProjId);
                         const caption = prompt("Masukkan caption untuk foto ini:");
                         
+                        if (!projectsData[projIndex].images) projectsData[projIndex].images = [];
                         projectsData[projIndex].images.push(url);
+                        
                         if(!projectsData[projIndex].captions) projectsData[projIndex].captions = [];
                         projectsData[projIndex].captions.push(caption || '');
                         
                         currentProjGalleryIndex = projectsData[projIndex].images.length - 1; 
                         updateProjGalleryView();
-                        buildProjectsCoverflow(); 
                         markUnsavedChanges();
                     }
                 };
@@ -3855,4 +3876,3 @@
     </script>
 </body>
 </html>
-```eof
