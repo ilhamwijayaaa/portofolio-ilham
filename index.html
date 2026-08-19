@@ -3394,21 +3394,27 @@
             projFrontImgInput.click();
         }
 
+        // --- DIREVISI: Membuka Cropper Modal saat Project Cover diupload ---
         projFrontImgInput.addEventListener('change', function(e) {
             const file = e.target.files[0];
             if (file && currentProjIdForFrontImg) {
+                currentCropTarget = 'projectCover'; // Set target untuk membedakan dengan Profile
                 const reader = new FileReader();
-                reader.onload = async function(event) {
-                    const url = await uploadImageToDriveAndGetUrl(file, event.target.result);
-                    if(url) {
-                        const projIndex = projectsData.findIndex(p => p.id === currentProjIdForFrontImg);
-                        if(projIndex !== -1) {
-                            // UPDATED: Save to coverImage instead of images[0]
-                            projectsData[projIndex].coverImage = url;
-                            buildProjectsCoverflow();
-                            markUnsavedChanges();
-                        }
+                reader.onload = function(event) {
+                    imageToCrop.src = event.target.result;
+                    cropModal.classList.remove('hidden');
+
+                    if (cropper) {
+                        cropper.destroy();
                     }
+                    // Inisialisasi Cropper.js dengan aspectRatio bebas (NaN) agar fleksibel
+                    cropper = new Cropper(imageToCrop, {
+                        aspectRatio: NaN, 
+                        viewMode: 2,
+                        dragMode: 'move',
+                        background: false,
+                        autoCropArea: 0.8,
+                    });
                 };
                 reader.readAsDataURL(file);
             }
@@ -3743,14 +3749,17 @@
         const cropModal = document.getElementById('cropModal');
         const imageToCrop = document.getElementById('imageToCrop');
         let cropper = null;
+        let currentCropTarget = 'profile'; // State untuk membedakan apa yang sedang di-crop
 
         function triggerProfileUpload() {
             profileInput.click();
         }
 
+        // --- DIREVISI: Handler Profile Cover ---
         profileInput.addEventListener('change', function(e) {
             const file = e.target.files[0];
             if (file) {
+                currentCropTarget = 'profile'; // Set target ke Profile
                 const reader = new FileReader();
                 reader.onload = function(event) {
                     // Hanya preview cropper, belum upload
@@ -3781,22 +3790,42 @@
             }
         }
 
+        // --- DIREVISI: Fungsi Apply Crop yang Universal ---
         async function applyCrop() {
             if (!cropper) return;
-            const canvas = cropper.getCroppedCanvas({
-                width: 800, 
-                height: 1000,
+            
+            // Konfigurasi kanvas
+            let canvasOptions = {
                 imageSmoothingEnabled: true,
                 imageSmoothingQuality: 'high',
-            });
-            
+            };
+
+            // Jika profile, kita set max dimension spesifik agar rapi (seperti sebelumnya)
+            if (currentCropTarget === 'profile') {
+                canvasOptions.width = 800;
+                canvasOptions.height = 1000;
+            }
+
+            const canvas = cropper.getCroppedCanvas(canvasOptions);
             const base64 = canvas.toDataURL('image/jpeg', 0.8);
             closeCropModal();
             
-            const url = await uploadImageToDriveAndGetUrl({name: "profile_cropped.jpg", type: "image/jpeg"}, base64);
-            if(url) {
-                document.getElementById('profileImage').src = url;
-                markUnsavedChanges();
+            if (currentCropTarget === 'profile') {
+                const url = await uploadImageToDriveAndGetUrl({name: "profile_cropped.jpg", type: "image/jpeg"}, base64);
+                if(url) {
+                    document.getElementById('profileImage').src = url;
+                    markUnsavedChanges();
+                }
+            } else if (currentCropTarget === 'projectCover') {
+                const url = await uploadImageToDriveAndGetUrl({name: "project_cover_cropped.jpg", type: "image/jpeg"}, base64);
+                if(url) {
+                    const projIndex = projectsData.findIndex(p => p.id === currentProjIdForFrontImg);
+                    if(projIndex !== -1) {
+                        projectsData[projIndex].coverImage = url;
+                        buildProjectsCoverflow();
+                        markUnsavedChanges();
+                    }
+                }
             }
         }
 
