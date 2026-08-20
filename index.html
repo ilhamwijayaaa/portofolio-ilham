@@ -1291,7 +1291,7 @@
                         <button onclick="nextExpImage()" class="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white hover:bg-eco-sageLight text-eco-textMain shadow-md flex items-center justify-center transition-all z-[93] focus:outline-none hover:scale-110"><i class="fas fa-chevron-right text-sm pointer-events-none"></i></button>
                         
                         <!-- Caption (Pill Design) -->
-                        <div class="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/60 backdrop-blur-sm px-4 py-1.5 rounded-full text-white text-[10px] sm:text-xs font-medium text-center shadow-lg border border-white/10 transition-all duration-300 z-[92] opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 pointer-events-none" id="modalExpImageCaption">
+                        <div class="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/60 backdrop-blur-sm px-4 py-1.5 rounded-full text-white text-[10px] sm:text-xs font-medium text-center shadow-lg border border-white/10 transition-opacity duration-300 z-[92]" id="modalExpImageCaption">
                             Caption
                         </div>
                     </div>
@@ -1430,8 +1430,7 @@
                         <button onclick="prevProjImage()" class="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white/90 hover:bg-white text-eco-textMain shadow-md flex items-center justify-center transition-all z-[93] focus:outline-none hover:scale-110 backdrop-blur-sm border border-gray-100"><i class="fas fa-chevron-left text-sm sm:text-base pointer-events-none"></i></button>
                         <button onclick="nextProjImage()" class="absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white/90 hover:bg-white text-eco-textMain shadow-md flex items-center justify-center transition-all z-[93] focus:outline-none hover:scale-110 backdrop-blur-sm border border-gray-100"><i class="fas fa-chevron-right text-sm sm:text-base pointer-events-none"></i></button>
 
-                        <!-- Caption (Pill Design) -->
-                        <div class="absolute bottom-6 left-1/2 -translate-x-1/2 bg-black/75 backdrop-blur-md px-6 py-2 rounded-full text-white text-xs font-medium text-center shadow-lg border border-white/15 transition-all duration-300 z-[92] opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 pointer-events-none" id="modalProjImageCaption">
+                        <div class="absolute bottom-6 left-1/2 -translate-x-1/2 bg-black/75 backdrop-blur-md px-6 py-2 rounded-full text-white text-xs font-medium text-center shadow-lg border border-white/15 transition-opacity duration-300 z-[92]" id="modalProjImageCaption">
                             Caption
                         </div>
                     </div>
@@ -2676,32 +2675,935 @@
                 imgEl.style.opacity = 0;
                 setTimeout(() => {
                     imgEl.src = exp.images[currentGalleryIndex];
-                    const currentCaption = exp.captions[currentGalleryIndex];
-                    if (currentCaption && currentCaption.trim() !== '') {
-                        capEl.innerText = currentCaption;
-                        capEl.classList.remove('hidden');
-                    } else {
-                        capEl.classList.add('hidden');
-                    }
+                    capEl.innerText = exp.captions[currentGalleryIndex] || '';
                     imgEl.style.opacity = 1;
                 }, 150);
             } else {
+                imgEl.src = '';
+                capEl.innerText = '';
+            }
+
+            dotsContainer.innerHTML = '';
+            if(exp.images.length > 1) {
+                exp.images.forEach((_, idx) => {
+                    const dot = document.createElement('div');
+                    dot.className = `w-2 h-2 rounded-full cursor-pointer transition-all ${idx === currentGalleryIndex ? 'bg-eco-sagePrimary w-4' : 'bg-gray-300'}`;
+                    dot.onclick = () => {
+                        currentGalleryIndex = idx;
+                        updateGalleryView();
+                    };
+                    dotsContainer.appendChild(dot);
+                });
+            }
+        }
+
+        function nextExpImage() {
+            const exp = experiencesData.find(e => e.id === currentOpenExpId);
+            if(!exp || exp.images.length <= 1) return;
+            currentGalleryIndex = (currentGalleryIndex + 1) % exp.images.length;
+            updateGalleryView();
+        }
+
+        function prevExpImage() {
+            const exp = experiencesData.find(e => e.id === currentOpenExpId);
+            if(!exp || exp.images.length <= 1) return;
+            currentGalleryIndex = (currentGalleryIndex - 1 + exp.images.length) % exp.images.length;
+            updateGalleryView();
+        }
+
+        function editCurrentExpDetails() {
+            const expIndex = experiencesData.findIndex(e => e.id === currentOpenExpId);
+            if(expIndex === -1) return;
+            const exp = experiencesData[expIndex];
+
+            const achText = exp.achievements.join('\n\n');
+
+            openCustomEditModal('Edit Achievements and Info', [
+                { id: 'dTit', label: 'Job Title', type: 'text', value: exp.title },
+                { id: 'dCom', label: 'Company', type: 'text', value: exp.company },
+                { id: 'dDat', label: 'Date', type: 'text', value: exp.date },
+                { id: 'dAch', label: 'Core Contributions <br><span class="normal-case font-normal text-[10px] text-gray-500">Pisahkan tiap poin dengan DUA enter (Enter 2x).<br>Gunakan tag &lt;highlight&gt;teks&lt;/highlight&gt; untuk stabilo.</span>', type: 'textarea', rows: 8, value: achText }
+            ], (data) => {
+                experiencesData[expIndex].title = data.dTit;
+                experiencesData[expIndex].company = data.dCom;
+                experiencesData[expIndex].date = data.dDat;
+                
+                if(data.dAch) {
+                    experiencesData[expIndex].achievements = data.dAch.split('\n\n').filter(a => a.trim() !== '');
+                }
+
+                renderTimeline(); 
+                openExpModal(currentOpenExpId); 
+            });
+        }
+
+        const expGalleryInput = document.getElementById('expGalleryUploadInput');
+
+        function directUploadExpImage() {
+            expGalleryInput.click();
+        }
+        
+        function directDeleteExpImage() {
+            const exp = experiencesData.find(e => e.id === currentOpenExpId);
+            if(!exp) return;
+            
+            if(exp.images.length <= 1) {
+                alert("Tidak bisa menghapus foto terakhir. Tambahkan foto baru dulu.");
+                return;
+            }
+            
+            if(confirm("Hapus foto yang sedang tampil ini?")) {
+                exp.images.splice(currentGalleryIndex, 1);
+                exp.captions.splice(currentGalleryIndex, 1);
+                currentGalleryIndex = 0; 
+                updateGalleryView();
+                // Also update the thumbnail view
+                renderTimeline();
+                markUnsavedChanges();
+            }
+        }
+
+        expGalleryInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file && currentOpenExpId) {
+                const reader = new FileReader();
+                reader.onload = async function(event) {
+                    const url = await uploadImageToDriveAndGetUrl(file, event.target.result);
+                    if(url) {
+                        const expIndex = experiencesData.findIndex(ex => ex.id === currentOpenExpId);
+                        const caption = prompt("Masukkan caption untuk foto ini:");
+                        
+                        experiencesData[expIndex].images.push(url);
+                        experiencesData[expIndex].captions.push(caption || '');
+                        
+                        currentGalleryIndex = experiencesData[expIndex].images.length - 1; 
+                        updateGalleryView();
+                        // Also update the thumbnail view
+                        renderTimeline();
+                        markUnsavedChanges();
+                    }
+                };
+                reader.readAsDataURL(file);
+            }
+            e.target.value = '';
+        });
+
+        renderTimeline();
+
+        // ==========================================
+        // ORGANIZATION EXPERIENCES LOGIC (EXPANDING)
+        // ==========================================
+        let organizationsData = [
+            {
+                id: 1,
+                role: "President",
+                name: "Forestry Student Association",
+                date: "2024 - 2025",
+                desc: "Led the executive board of 50+ members, organized national forestry seminars, and managed community development programs in local forest villages.",
+                fullDesc: [
+                    "Organized the annual national forestry seminar attracting over 500 participants across Indonesia.",
+                    "Initiated a community development program focused on non-timber forest products in 3 local villages.",
+                    "Streamlined the organization's financial reporting system, increasing budget transparency by 40%."
+                ],
+                bgImage: "https://images.unsplash.com/photo-1523580494112-071d384e24eb?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
+                images: ["https://images.unsplash.com/photo-1523580494112-071d384e24eb?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"]
+            },
+            {
+                id: 2,
+                role: "Expedition Coordinator",
+                name: "National Park Expedition Club",
+                date: "2023 - 2024",
+                desc: "Coordinated logistics, risk management, and scientific data collection for a 14-day ecological expedition in Ujung Kulon National Park.",
+                fullDesc: [
+                    "Managed logistics and supplies for a team of 25 researchers over a 14-day intensive field expedition.",
+                    "Designed and implemented emergency risk management protocols tailored for deep-jungle environments.",
+                    "Oversaw the collection and secure transport of over 200 biological samples for laboratory analysis."
+                ],
+                bgImage: "https://images.unsplash.com/photo-1501555088652-021faa106b9b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
+                images: ["https://images.unsplash.com/photo-1501555088652-021faa106b9b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"]
+            },
+            {
+                id: 3,
+                role: "Conservation Volunteer",
+                name: "Mangrove Care Indonesia",
+                date: "2022 - 2023",
+                desc: "Participated in planting 5,000+ mangrove seedlings and educated coastal communities on the economic benefits of silvofishery.",
+                fullDesc: [
+                    "Actively planted over 5,000 mangrove seedlings along degraded coastlines in Subang.",
+                    "Conducted workshops for local fishermen demonstrating the integration of mangroves with aquaculture (silvofishery).",
+                    "Assisted in continuous monitoring of plant survival rates post-planting."
+                ],
+                bgImage: "https://images.unsplash.com/photo-1544256718-3bcf237f3974?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
+                images: ["https://images.unsplash.com/photo-1544256718-3bcf237f3974?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"]
+            }
+        ];
+
+        let activeOrgId = 1; 
+
+        function handleOrgCardClick(event, id) {
+            if (activeOrgId === id) {
+                openOrgModal(event, id);
+            } else {
+                activeOrgId = id;
+                renderOrganizations();
+            }
+        }
+
+        function renderOrganizations() {
+            const container = document.getElementById('orgContainer');
+            container.innerHTML = '';
+
+            organizationsData.forEach((org, index) => {
+                const isActive = org.id === activeOrgId ? 'active' : '';
+                
+                const cardHTML = `
+                <div class="org-card ${isActive}" onclick="handleOrgCardClick(event, ${org.id})">
+                    <!-- Admin Controls -->
+                    <div class="admin-control ${isAdmin ? '' : 'hidden'} absolute top-4 right-4 flex gap-2 z-50">
+                        <button onclick="triggerOrgBgUpload(event, ${org.id})" class="bg-black/60 hover:bg-black/80 text-white w-8 h-8 rounded-full shadow flex items-center justify-center transition backdrop-blur-md" title="Change Background"><i class="fas fa-camera text-xs pointer-events-none"></i></button>
+                        <button onclick="editOrgCard(event, ${org.id})" class="bg-white/90 hover:bg-white text-gray-500 hover:text-eco-sagePrimary w-8 h-8 rounded-full shadow flex items-center justify-center transition" title="Edit Info"><i class="fas fa-edit pointer-events-none"></i></button>
+                        <button onclick="deleteOrgCard(event, ${org.id})" class="bg-white/90 hover:bg-white text-gray-500 hover:text-red-500 w-8 h-8 rounded-full shadow flex items-center justify-center transition" title="Delete"><i class="fas fa-trash pointer-events-none"></i></button>
+                    </div>
+
+                    <img src="${org.bgImage}" class="org-bg-img" alt="${org.name}">
+                    
+                    <div class="org-content w-full text-left">
+                        <h3 class="font-serif text-base sm:text-lg font-bold mb-1 leading-snug w-full">${org.role}</h3>
+                        <p class="text-eco-visionAccent font-semibold text-[10px] sm:text-xs tracking-wide uppercase w-full pr-2">${org.name}</p>
+                        
+                        <div class="org-details w-full">
+                            <p class="text-white/80 text-xs mb-3 flex items-center gap-2"><i class="far fa-calendar-alt text-eco-visionAccent"></i> ${org.date}</p>
+                            <p class="text-gray-300 text-[11px] sm:text-xs font-light leading-relaxed mb-3 line-clamp-3">${org.desc}</p>
+                            
+                            <button class="mt-2 px-3 py-1.5 bg-eco-visionAccent text-eco-visionDark font-bold text-[10px] rounded hover:bg-white transition flex items-center gap-2 w-max shadow-sm pointer-events-none">
+                                View Details <i class="fas fa-arrow-right text-[10px]"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                `;
+                container.insertAdjacentHTML('beforeend', cardHTML);
+            });
+        }
+
+        // Admin: Org Background Upload
+        let currentOrgIdForBg = null;
+        const orgBgInput = document.getElementById('orgBgImageUploadInput');
+
+        function triggerOrgBgUpload(event, id) {
+            event.stopPropagation();
+            currentOrgIdForBg = id;
+            orgBgInput.click();
+        }
+
+        orgBgInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file && currentOrgIdForBg) {
+                const reader = new FileReader();
+                reader.onload = async function(event) {
+                    const url = await uploadImageToDriveAndGetUrl(file, event.target.result);
+                    if(url) {
+                        const orgIndex = organizationsData.findIndex(o => o.id === currentOrgIdForBg);
+                        if(orgIndex !== -1) {
+                            organizationsData[orgIndex].bgImage = url;
+                            if (!organizationsData[orgIndex].images) organizationsData[orgIndex].images = [];
+                            if (organizationsData[orgIndex].images.length === 0) {
+                                organizationsData[orgIndex].images.push(url);
+                            } else {
+                                organizationsData[orgIndex].images[0] = url; 
+                            }
+                            renderOrganizations();
+                            markUnsavedChanges();
+                        }
+                    }
+                };
+                reader.readAsDataURL(file);
+            }
+            e.target.value = '';
+        });
+
+        function editOrgHeader() {
+            const title = document.getElementById('orgMainTitle');
+            const desc = document.getElementById('orgSubDesc');
+            openCustomEditModal('Edit Organization Header', [
+                { id: 'oTit', label: 'Judul Utama', type: 'text', value: title.innerText },
+                { id: 'oDes', label: 'Deskripsi Singkat', type: 'textarea', rows: 2, value: desc.innerText }
+            ], (data) => {
+                if(data.oTit) title.innerText = data.oTit;
+                if(data.oDes) desc.innerText = data.oDes;
+            });
+        }
+
+        function addOrgCard() {
+            const newId = organizationsData.length > 0 ? Math.max(...organizationsData.map(o => o.id)) + 1 : 1;
+            
+            openCustomEditModal('Add Organization', [
+                { id: 'nRole', label: 'Role / Posisi', type: 'text', value: '' },
+                { id: 'nName', label: 'Organization Name', type: 'text', value: '' },
+                { id: 'nDate', label: 'Date Range', type: 'text', value: '' },
+                { id: 'nDesc', label: 'Description', type: 'textarea', rows: 3, value: '' }
+            ], (data) => {
+                if(!data.nRole || !data.nName) return; 
+
+                organizationsData.push({ 
+                    id: newId,
+                    role: data.nRole,
+                    name: data.nName,
+                    date: data.nDate,
+                    desc: data.nDesc,
+                    fullDesc: ["Detail point 1..."],
+                    bgImage: "https://placehold.co/800x600?text=Org+Image",
+                    images: ["https://placehold.co/800x600?text=Org+Image"]
+                });
+                renderOrganizations();
+                markUnsavedChanges();
+            });
+        }
+
+        function editOrgCard(event, id) {
+            event.stopPropagation(); 
+            const orgIndex = organizationsData.findIndex(o => o.id === id);
+            if(orgIndex === -1) return;
+            const org = organizationsData[orgIndex];
+
+            openCustomEditModal('Edit Organization Info', [
+                { id: 'eRole', label: 'Role / Posisi', type: 'text', value: org.role },
+                { id: 'eName', label: 'Organization Name', type: 'text', value: org.name },
+                { id: 'eDate', label: 'Date Range', type: 'text', value: org.date },
+                { id: 'eDesc', label: 'Short Description', type: 'textarea', rows: 3, value: org.desc }
+            ], (data) => {
+                if(data.eRole) organizationsData[orgIndex].role = data.eRole;
+                if(data.eName) organizationsData[orgIndex].name = data.eName;
+                if(data.eDate) organizationsData[orgIndex].date = data.eDate;
+                if(data.eDesc) organizationsData[orgIndex].desc = data.eDesc;
+                renderOrganizations();
+            });
+        }
+
+        function deleteOrgCard(event, id) {
+            event.stopPropagation();
+            if(confirm("Yakin ingin menghapus organisasi ini?")) {
+                organizationsData = organizationsData.filter(o => o.id !== id);
+                if(activeOrgId === id && organizationsData.length > 0) {
+                    activeOrgId = organizationsData[0].id;
+                }
+                renderOrganizations();
+                markUnsavedChanges();
+            }
+        }
+
+        // --- ORG DETAIL MODAL LOGIC ---
+        let currentOpenOrgId = null;
+        let currentOrgGalleryIndex = 0;
+
+        function openOrgModal(event, id) {
+            event.stopPropagation(); 
+            const org = organizationsData.find(o => o.id === id);
+            if(!org) return;
+            
+            currentOpenOrgId = id;
+            currentOrgGalleryIndex = 0;
+
+            if(!org.fullDesc) org.fullDesc = [org.desc];
+            if(!org.images || org.images.length === 0) org.images = [org.bgImage];
+
+            document.getElementById('modalOrgRole').innerText = org.role;
+            document.getElementById('modalOrgName').innerText = org.name;
+            document.getElementById('modalOrgDate').innerText = org.date;
+            
+            const descContainer = document.getElementById('modalOrgDescription');
+            descContainer.innerHTML = '';
+            org.fullDesc.forEach(desc => {
+                descContainer.innerHTML += `
+                    <li class="flex items-start gap-3">
+                        <i class="fas fa-chevron-right text-eco-sagePrimary mt-1.5 flex-shrink-0 text-[10px]"></i>
+                        <span>${desc}</span>
+                    </li>
+                `;
+            });
+
+            updateOrgGalleryView();
+
+            const modal = document.getElementById('orgDetailModal');
+            const content = document.getElementById('orgModalContent');
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                content.classList.remove('scale-95');
+                content.classList.add('scale-100');
+            }, 10);
+            
+            if (isAdmin) {
+                modal.querySelectorAll('.admin-control').forEach(el => el.classList.remove('hidden'));
+            }
+        }
+
+        function closeOrgModal() {
+            const modal = document.getElementById('orgDetailModal');
+            const content = document.getElementById('orgModalContent');
+            
+            modal.classList.add('opacity-0');
+            content.classList.remove('scale-100');
+            content.classList.add('scale-95');
+            
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                currentOpenOrgId = null;
+            }, 300);
+        }
+
+        function updateOrgGalleryView() {
+            if(!currentOpenOrgId) return;
+            const org = organizationsData.find(o => o.id === currentOpenOrgId);
+            
+            const imgEl = document.getElementById('modalOrgImage');
+            const dotsContainer = document.getElementById('modalOrgGalleryDots');
+
+            if(org.images.length > 0) {
+                imgEl.style.opacity = 0;
+                setTimeout(() => {
+                    imgEl.src = org.images[currentOrgGalleryIndex];
+                    imgEl.style.opacity = 1;
+                }, 150);
+            } else {
+                imgEl.src = '';
+            }
+
+            dotsContainer.innerHTML = '';
+            if(org.images.length > 1) {
+                org.images.forEach((_, idx) => {
+                    const dot = document.createElement('div');
+                    dot.className = `w-2 h-2 rounded-full cursor-pointer transition-all ${idx === currentOrgGalleryIndex ? 'bg-white w-5' : 'bg-white/40'}`;
+                    dot.onclick = () => {
+                        currentOrgGalleryIndex = idx;
+                        updateOrgGalleryView();
+                    };
+                    dotsContainer.appendChild(dot);
+                });
+            }
+        }
+
+        function nextOrgImage() {
+            const org = organizationsData.find(o => o.id === currentOpenOrgId);
+            if(!org || org.images.length <= 1) return;
+            currentOrgGalleryIndex = (currentOrgGalleryIndex + 1) % org.images.length;
+            updateOrgGalleryView();
+        }
+
+        function prevOrgImage() {
+            const org = organizationsData.find(o => o.id === currentOpenOrgId);
+            if(!org || org.images.length <= 1) return;
+            currentOrgGalleryIndex = (currentOrgGalleryIndex - 1 + org.images.length) % org.images.length;
+            updateOrgGalleryView();
+        }
+
+        function editCurrentOrgDetails() {
+            const orgIndex = organizationsData.findIndex(o => o.id === currentOpenOrgId);
+            if(orgIndex === -1) return;
+            const org = organizationsData[orgIndex];
+
+            const descText = org.fullDesc.join('\n\n');
+
+            openCustomEditModal('Edit Full Details', [
+                { id: 'dFull', label: 'Key Responsibilities and Impact (Bullet Points)<br><span class="normal-case font-normal text-[10px] text-gray-500">Pisahkan tiap poin dengan DUA enter (Enter 2x).</span>', type: 'textarea', rows: 8, value: descText }
+            ], (data) => {
+                if(data.dFull) organizationsData[orgIndex].fullDesc = data.dFull.split('\n\n').filter(a => a.trim() !== '');
+                openOrgModal(new Event('click'), currentOpenOrgId); 
+            });
+        }
+
+        const orgGalleryInput = document.createElement('input');
+        orgGalleryInput.type = 'file';
+        orgGalleryInput.accept = 'image/*';
+        orgGalleryInput.style.display = 'none';
+        document.body.appendChild(orgGalleryInput);
+
+        function directUploadOrgImage() {
+            orgGalleryInput.click();
+        }
+        
+        function directDeleteOrgImage() {
+            const org = organizationsData.find(o => o.id === currentOpenOrgId);
+            if(!org) return;
+            
+            if(org.images.length <= 1) {
+                alert("Cannot delete the last image.");
+                return;
+            }
+            
+            if(confirm("Delete this image?")) {
+                org.images.splice(currentOrgGalleryIndex, 1);
+                currentOrgGalleryIndex = 0; 
+                updateOrgGalleryView();
+                markUnsavedChanges();
+            }
+        }
+
+        orgGalleryInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file && currentOpenOrgId) {
+                const reader = new FileReader();
+                reader.onload = async function(event) {
+                    const url = await uploadImageToDriveAndGetUrl(file, event.target.result);
+                    if(url) {
+                        const orgIndex = organizationsData.findIndex(o => o.id === currentOpenOrgId);
+                        organizationsData[orgIndex].images.push(url);
+                        currentOrgGalleryIndex = organizationsData[orgIndex].images.length - 1; 
+                        updateOrgGalleryView();
+                        markUnsavedChanges();
+                    }
+                };
+                reader.readAsDataURL(file);
+            }
+            e.target.value = '';
+        });
+
+        renderOrganizations();
+
+        // ==========================================
+        // FEATURED PROJECTS LOGIC (INFINITE COVERFLOW)
+        // ==========================================
+        let projectsData = [
+            {
+                id: 1,
+                title: "Shoreline Dynamics",
+                category: "GIS and Analysis",
+                location: "Blanakan Bay, Subang",
+                shortDesc: "Modeling of Shoreline Dynamics in Blanakan Bay (2005-2025) using geospatial analysis.",
+                fullDesc: [
+                    "Focused on identifying and analyzing shoreline changes (accretion and abrasion) over a 20-year period in Blanakan Bay, Subang Regency.",
+                    "Utilized GIS tools including ArcGIS and Digital Shoreline Analysis System (DSAS).",
+                    "Modeled future shoreline dynamics to inform coastal management and conservation strategies."
+                ],
+                // Cover image for the 3D slider
+                coverImage: "https://images.unsplash.com/photo-1620127252536-049e9e6231d6?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
+                // Images for the inner gallery
+                images: ["https://images.unsplash.com/photo-1620127252536-049e9e6231d6?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"],
+                captions: ["Shoreline Mapping Map"],
+                pdfUrl: "", 
+                pdfName: ""
+            },
+            {
+                id: 2,
+                title: "Bamboo Reclamation",
+                category: "Reclamation",
+                location: "PT Vale Indonesia",
+                shortDesc: "Evaluating the success of bamboo reclamation on post-mining land at PT Vale.",
+                fullDesc: [
+                    "Conducted an in-depth evaluation of bamboo planting efforts on degraded post-mining lands.",
+                    "Assessed plant health, soil biophysical conditions, and plant survival rates.",
+                    "Determined the effectiveness of bamboo as a pioneer species for rapid ecological restoration and soil stabilization."
+                ],
+                coverImage: "https://images.unsplash.com/photo-1523730205978-59fd1b2965e3?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
+                images: ["https://images.unsplash.com/photo-1523730205978-59fd1b2965e3?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"],
+                captions: ["Bamboo Evaluation Area"],
+                pdfUrl: "", 
+                pdfName: ""
+            },
+            {
+                id: 3,
+                title: "Orchid Inventory System",
+                category: "Web App",
+                location: "Digital Web System",
+                shortDesc: "Web-based orchid inventory system utilizing Google Apps Script and structured databases.",
+                fullDesc: [
+                    "Developed a comprehensive digital inventory system to track and monitor orchid species within a conservation area.",
+                    "The system replaces manual ledgers, significantly improving data accuracy and accessibility.",
+                    "Enabled real-time tracking of plant health, bloom cycles, and geolocation tagging."
+                ],
+                coverImage: "https://images.unsplash.com/photo-1597848212624-a19eb35e2651?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
+                images: ["https://images.unsplash.com/photo-1597848212624-a19eb35e2651?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"],
+                captions: ["Orchid Web System Interface"],
+                pdfUrl: "", 
+                pdfName: ""
+            },
+            {
+                id: 4,
+                title: "Carbon Assessment and Stock",
+                category: "Analysis",
+                location: "Coastal Areas",
+                shortDesc: "Evaluating carbon storage capacity in mangrove ecosystems using InVEST.",
+                fullDesc: [
+                    "Utilized the InVEST (Integrated Valuation of Ecosystem Services and Tradeoffs) model.",
+                    "Estimated the carbon storage and sequestration potential of coastal mangrove forests.",
+                    "Provided findings that highlight the economic and ecological value of mangroves in mitigating climate change impacts."
+                ],
+                coverImage: "https://images.unsplash.com/photo-1448375240586-882707db888b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
+                images: ["https://images.unsplash.com/photo-1448375240586-882707db888b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"],
+                captions: ["Mangrove Coastal Area"],
+                pdfUrl: "", 
+                pdfName: ""
+            },
+            {
+                id: 5,
+                title: "Avifauna Diversity Study",
+                category: "Biodiversity",
+                location: "Mt. Papandayan",
+                shortDesc: "Analysis of Diversity and Ecological Study of Avifauna in CA/TWA Gunung Papandayan.",
+                fullDesc: [
+                    "Conducted point-count surveys to identify bird species across different elevation gradients.",
+                    "Analyzed feeding guilds and habitat preferences using ecological indices.",
+                    "Contributed to baseline data for conservation management in the Papandayan region."
+                ],
+                coverImage: "https://images.unsplash.com/photo-1555169062-013468b47731?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
+                images: ["https://images.unsplash.com/photo-1555169062-013468b47731?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"],
+                captions: ["Bird Watching Activity"],
+                pdfUrl: "", 
+                pdfName: ""
+            },
+            {
+                id: 6,
+                title: "Soil Degradation Analysis",
+                category: "Soil Science",
+                location: "Mt. Papandayan",
+                shortDesc: "Analysis of Soil Structure Changes Due to Land Degradation and Its Effect on Porosity.",
+                fullDesc: [
+                    "Collected and analyzed soil samples from degraded vs. intact forest areas.",
+                    "Measured bulk density, particle density, and total porosity.",
+                    "Correlated soil physical properties with vegetation cover density."
+                ],
+                coverImage: "https://images.unsplash.com/photo-1581092795360-fd1ca04f0952?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
+                images: ["https://images.unsplash.com/photo-1581092795360-fd1ca04f0952?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"],
+                captions: ["Soil Sample Testing"],
+                pdfUrl: "", 
+                pdfName: ""
+            }
+        ];
+
+        let activeProjCoverflowIndex = 0; 
+
+        function buildProjectsCoverflow() {
+            const track = document.getElementById('coverflowTrack');
+            track.innerHTML = '';
+            
+            projectsData.forEach((proj, i) => {
+                // Ensure backward compatibility with existing data
+                const displayImage = proj.coverImage || (proj.images && proj.images.length > 0 ? proj.images[0] : 'https://placehold.co/600x400?text=No+Image');
+
+                const cardHTML = `
+                <div id="proj-card-${i}" class="coverflow-item transition-all duration-700 ease-in-out" onclick="handleCoverflowClick(${i}, ${proj.id})">
+                    <div class="coverflow-card-content relative group/proj">
+                        
+                        <!-- Admin Edit Front Image (Top Left) -->
+                        <div class="admin-control ${isAdmin ? '' : 'hidden'} absolute top-4 left-4 z-40">
+                            <button onclick="triggerProjFrontImageUpload(event, ${proj.id})" class="bg-black/60 hover:bg-black/80 text-white w-8 h-8 rounded-full shadow flex items-center justify-center transition backdrop-blur-md" title="Change Cover Image"><i class="fas fa-camera text-xs pointer-events-none"></i></button>
+                        </div>
+
+                        <!-- Admin Controls (Edit/Delete - Top Right) -->
+                        <div class="admin-control ${isAdmin ? '' : 'hidden'} absolute top-4 right-4 flex gap-2 z-40">
+                            <button onclick="editProjectCard(event, ${proj.id})" class="bg-white/90 hover:bg-white text-gray-500 hover:text-eco-sagePrimary w-8 h-8 rounded-full shadow flex items-center justify-center transition"><i class="fas fa-edit pointer-events-none"></i></button>
+                            <button onclick="deleteProjectCard(event, ${proj.id})" class="bg-white/90 hover:bg-white text-gray-500 hover:text-red-500 w-8 h-8 rounded-full shadow flex items-center justify-center transition"><i class="fas fa-trash pointer-events-none"></i></button>
+                        </div>
+
+                        <!-- Image Area -->
+                        <div class="h-56 relative overflow-hidden shrink-0">
+                            <!-- UPDATED: Use coverImage here -->
+                            <img src="${displayImage}" alt="${proj.title}" class="w-full h-full object-cover transition duration-700 group-hover/proj:scale-105">
+                            <div class="absolute inset-0 bg-black/10 opacity-0 group-hover/proj:opacity-100 transition duration-300 pointer-events-none"></div>
+                            
+                            <!-- Highlight Category -->
+                            <div class="absolute top-4 left-4 bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-full text-[10px] font-bold text-eco-sagePrimary uppercase tracking-wider shadow-sm flex items-center gap-1.5 z-20 ${isAdmin ? 'mt-10' : ''}">
+                                <span class="w-1.5 h-1.5 rounded-full bg-eco-sagePrimary"></span> ${proj.category}
+                            </div>
+                        </div>
+
+                        <!-- Text Area -->
+                        <div class="p-6 flex flex-col flex-grow relative bg-white">
+                            <h3 class="font-serif text-xl font-bold text-eco-textMain mb-2 pr-2 leading-tight">${proj.title}</h3>
+                            <p class="text-eco-textMuted text-sm font-light leading-relaxed line-clamp-3 mb-4 flex-grow">${proj.shortDesc}</p>
+                            
+                            <span class="text-eco-sageHover text-[11px] font-semibold normal-case mt-auto flex items-center gap-1.5 pointer-events-none">
+                                Click to view details <i class="fas fa-arrow-right text-[10px]"></i>
+                            </span>
+                        </div>
+                        
+                        <!-- Overlay Block for Inactive Cards -->
+                        <div class="coverflow-overlay"></div>
+                    </div>
+                </div>
+                `;
+                track.insertAdjacentHTML('beforeend', cardHTML);
+            });
+            
+            updateProjectsCoverflow();
+        }
+
+        function updateProjectsCoverflow() {
+            const pagination = document.getElementById('projectsPagination');
+            pagination.innerHTML = '';
+
+            const len = projectsData.length;
+            if(len === 0) return;
+            
+            if (activeProjCoverflowIndex < 0) {
+                activeProjCoverflowIndex = len - 1;
+            } else if (activeProjCoverflowIndex >= len) {
+                activeProjCoverflowIndex = 0;
+            }
+
+            projectsData.forEach((proj, i) => {
+                let diff = i - activeProjCoverflowIndex;
+                
+                if (diff > len / 2) diff -= len;
+                else if (diff < -len / 2) diff += len;
+
+                const cardEl = document.getElementById(`proj-card-${i}`);
+                if (cardEl) {
+                    cardEl.className = 'coverflow-item transition-all duration-700 ease-in-out'; 
+                    
+                    if (diff === 0) cardEl.classList.add('active');
+                    else if (diff === -1) cardEl.classList.add('prev-1');
+                    else if (diff === 1) cardEl.classList.add('next-1');
+                    else if (diff === -2) cardEl.classList.add('prev-2');
+                    else if (diff === 2) cardEl.classList.add('next-2');
+                    else if (diff < -2) cardEl.classList.add('hidden-left');
+                    else if (diff > 2) cardEl.classList.add('hidden-right');
+                }
+
+                const dot = document.createElement('div');
+                dot.className = `w-2 h-2 rounded-full transition-all duration-300 ${i === activeProjCoverflowIndex ? 'bg-eco-sagePrimary w-6' : 'bg-gray-300 cursor-pointer'}`;
+                dot.onclick = () => {
+                    activeProjCoverflowIndex = i;
+                    updateProjectsCoverflow();
+                };
+                pagination.appendChild(dot);
+            });
+        }
+
+        function handleCoverflowClick(index, projId) {
+            if (index === activeProjCoverflowIndex) {
+                openProjectModal(projId);
+            } else {
+                activeProjCoverflowIndex = index;
+                updateProjectsCoverflow();
+            }
+        }
+
+        function moveCoverflow(direction) {
+            activeProjCoverflowIndex += direction;
+            updateProjectsCoverflow();
+        }
+
+        // Admin: Front Image Upload for Projects
+        let currentProjIdForFrontImg = null;
+        const projFrontImgInput = document.getElementById('projFrontImageUploadInput');
+
+        function triggerProjFrontImageUpload(event, id) {
+            event.stopPropagation();
+            currentProjIdForFrontImg = id;
+            projFrontImgInput.click();
+        }
+
+        // --- DIREVISI: Membuka Cropper Modal saat Project Cover diupload ---
+        projFrontImgInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file && currentProjIdForFrontImg) {
+                currentCropTarget = 'projectCover'; // Set target untuk membedakan dengan Profile
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    imageToCrop.src = event.target.result;
+                    cropModal.classList.remove('hidden');
+
+                    if (cropper) {
+                        cropper.destroy();
+                    }
+                    // Inisialisasi Cropper.js dengan aspectRatio bebas (NaN) agar fleksibel
+                    cropper = new Cropper(imageToCrop, {
+                        aspectRatio: NaN, 
+                        viewMode: 2,
+                        dragMode: 'move',
+                        background: false,
+                        autoCropArea: 0.8,
+                    });
+                };
+                reader.readAsDataURL(file);
+            }
+            e.target.value = '';
+        });
+
+        function editProjHeader() {
+            const title = document.getElementById('projMainTitle');
+            const desc = document.getElementById('projSubDesc');
+            openCustomEditModal('Edit Projects Header', [
+                { id: 'pTit', label: 'Judul Utama', type: 'text', value: title.innerText },
+                { id: 'pDes', label: 'Deskripsi Singkat', type: 'textarea', rows: 2, value: desc.innerText }
+            ], (data) => {
+                if(data.pTit) title.innerText = data.pTit;
+                if(data.pDes) desc.innerText = data.pDes;
+            });
+        }
+
+        function editContact() {
+            const t1 = document.getElementById('contactTitle1');
+            const t2 = document.getElementById('contactTitle2');
+            const desc = document.getElementById('contactDesc');
+            
+            openCustomEditModal('Edit Contact Section', [
+                { id: 'cT1', label: 'Judul Baris Pertama', type: 'text', value: t1.innerText },
+                { id: 'cT2', label: 'Judul Baris Kedua (Highlight Gelap)', type: 'text', value: t2.innerText },
+                { id: 'cDesc', label: 'Deskripsi', type: 'textarea', rows: 3, value: desc.innerText }
+            ], (data) => {
+                if(data.cT1) t1.innerText = data.cT1;
+                if(data.cT2) t2.innerText = data.cT2;
+                if(data.cDesc) desc.innerText = data.cDesc;
+            });
+        }
+
+        function addProjectCard() {
+            const newId = projectsData.length > 0 ? Math.max(...projectsData.map(p => p.id)) + 1 : 1;
+            
+            openCustomEditModal('Add New Project', [
+                { id: 'nTitle', label: 'Project Title', type: 'text', value: '' },
+                { id: 'nCat', label: 'Category / Field (e.g. GIS, Web App)', type: 'text', value: '' },
+                { id: 'nLoc', label: 'Location (e.g. Subang, PT Vale)', type: 'text', value: '' },
+                { id: 'nDesc', label: 'Short Description', type: 'textarea', rows: 3, value: '' }
+            ], (data) => {
+                if(!data.nTitle) return; 
+
+                projectsData.unshift({ 
+                    id: newId,
+                    title: data.nTitle,
+                    category: data.nCat || 'Project',
+                    location: data.nLoc || 'Remote',
+                    shortDesc: data.nDesc,
+                    fullDesc: ["Project Point 1...", "Project Point 2..."],
+                    coverImage: "https://placehold.co/800x600?text=Cover+Image", // Add cover image
+                    images: ["https://placehold.co/1920x1080?text=Slide+1"], // Set default to 16:9
+                    captions: ["Placeholder"],
+                    pdfUrl: "",
+                    pdfName: ""
+                });
+                activeProjCoverflowIndex = 0; 
+                buildProjectsCoverflow();
+                markUnsavedChanges();
+            });
+        }
+
+        function editProjectCard(event, id) {
+            event.stopPropagation(); 
+            const projIndex = projectsData.findIndex(p => p.id === id);
+            if(projIndex === -1) return;
+            const proj = projectsData[projIndex];
+
+            openCustomEditModal('Edit Project Card', [
+                { id: 'eTitle', label: 'Project Title', type: 'text', value: proj.title },
+                { id: 'eCat', label: 'Category / Field', type: 'text', value: proj.category },
+                { id: 'eLoc', label: 'Location', type: 'text', value: proj.location || '' },
+                { id: 'eDesc', label: 'Short Description', type: 'textarea', rows: 3, value: proj.shortDesc }
+            ], (data) => {
+                if(data.eTitle) projectsData[projIndex].title = data.eTitle;
+                if(data.eCat) projectsData[projIndex].category = data.eCat;
+                if(data.eLoc) projectsData[projIndex].location = data.eLoc;
+                if(data.eDesc) projectsData[projIndex].shortDesc = data.eDesc;
+                buildProjectsCoverflow();
+            });
+        }
+
+        function deleteProjectCard(event, id) {
+            event.stopPropagation();
+            if(confirm("Yakin ingin menghapus project ini?")) {
+                projectsData = projectsData.filter(p => p.id !== id);
+                buildProjectsCoverflow();
+                markUnsavedChanges();
+            }
+        }
+
+        // ==========================================
+        // PROJECT DETAIL MODAL & PDF LOGIC
+        // ==========================================
+        let currentOpenProjId = null;
+        let currentProjGalleryIndex = 0;
+
+        function openProjectModal(id) {
+            const proj = projectsData.find(p => p.id === id);
+            if(!proj) return;
+            
+            currentOpenProjId = id;
+            currentProjGalleryIndex = 0;
+
+            document.getElementById('modalProjTitle').innerText = proj.title;
+            document.getElementById('modalProjLocation').innerText = `${proj.location || 'Location'}`;
+
+            const descContainer = document.getElementById('modalProjDescription');
+            descContainer.innerHTML = '';
+            proj.fullDesc.forEach(desc => {
+                descContainer.innerHTML += `
+                    <li class="flex items-start gap-3">
+                        <i class="fas fa-chevron-right text-eco-sagePrimary mt-1.5 flex-shrink-0 text-[10px]"></i>
+                        <span>${desc}</span>
+                    </li>
+                `;
+            });
+
+            const pdfBtn = document.getElementById('modalProjPdfLink');
+            const noPdfText = document.getElementById('modalProjNoPdfText');
+            
+            if(proj.pdfUrl && proj.pdfUrl !== "") {
+                pdfBtn.href = proj.pdfUrl;
+                pdfBtn.download = proj.pdfName || "Project_Document.pdf";
+                pdfBtn.classList.remove('hidden');
+                noPdfText.classList.add('hidden');
+            } else {
+                pdfBtn.classList.add('hidden');
+                noPdfText.classList.remove('hidden');
+            }
+
+            updateProjGalleryView();
+
+            const modal = document.getElementById('projectDetailModal');
+            const content = document.getElementById('projModalContent');
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                content.classList.remove('scale-95');
+                content.classList.add('scale-100');
+            }, 10);
+            
+            const adminControls = modal.querySelectorAll('.admin-control');
+            if (isAdmin) {
+                adminControls.forEach(el => el.classList.remove('hidden'));
+            } else {
+                adminControls.forEach(el => el.classList.add('hidden'));
+            }
+        }
+
+        function closeProjectModal() {
+            const modal = document.getElementById('projectDetailModal');
+            const content = document.getElementById('projModalContent');
+            
+            modal.classList.add('opacity-0');
+            content.classList.remove('scale-100');
+            content.classList.add('scale-95');
+            
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                currentOpenProjId = null;
+            }, 300);
+        }
+
+        function updateProjGalleryView() {
+            if(!currentOpenProjId) return;
+            const proj = projectsData.find(p => p.id === currentOpenProjId);
+            
+            const imgEl = document.getElementById('modalProjImage');
+            const capEl = document.getElementById('modalProjImageCaption');
+            const dotsContainer = document.getElementById('modalProjGalleryDots');
+
             if(proj.images && proj.images.length > 0) {
                 imgEl.style.opacity = 0;
                 setTimeout(() => {
                     imgEl.src = proj.images[currentProjGalleryIndex];
-                    const currentCaption = proj.captions ? proj.captions[currentProjGalleryIndex] : '';
-                    if(currentCaption && currentCaption.trim() !== '') {
-                        capEl.innerText = currentCaption;
-                        capEl.classList.remove('hidden');
+                    if(proj.captions && proj.captions[currentProjGalleryIndex]) {
+                        capEl.innerText = proj.captions[currentProjGalleryIndex];
+                        capEl.style.display = 'block';
                     } else {
-                        capEl.classList.add('hidden');
+                        capEl.style.display = 'none';
                     }
                     imgEl.style.opacity = 1;
                 }, 150);
             } else {
                 imgEl.src = 'https://placehold.co/1920x1080?text=No+Images';
-                capEl.classList.add('hidden');
+                capEl.style.display = 'none';
             }
 
             dotsContainer.innerHTML = '';
