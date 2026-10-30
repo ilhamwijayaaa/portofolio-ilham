@@ -1464,6 +1464,26 @@
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzDJfeKnEsR5cQWixqeq8hjZ1WusI22rG-Be_Lvxr6XnxrVxetsQqUttAcVumwdp5Re/exec";
 
         // ==========================================
+        // 🛠️ FUNGSI PERBAIKAN URL GAMBAR GOOGLE DRIVE (BARU)
+        // ==========================================
+        // Link thumbnail bawaan Google Drive ada masa kedaluwarsanya (expired). 
+        // Fungsi ini otomatis mendeteksi dan mengubah link yang expired menjadi link permanen.
+        function fixExpiredDriveUrls(data) {
+            if (typeof data === 'string') {
+                return data.replace(/https:\/\/drive\.google\.com\/thumbnail\?id=([a-zA-Z0-9_-]+)(?:&sz=[a-zA-Z0-9_]+)?/g, 'https://drive.google.com/uc?export=view&id=$1');
+            } else if (Array.isArray(data)) {
+                return data.map(item => fixExpiredDriveUrls(item));
+            } else if (data !== null && typeof data === 'object') {
+                const newData = {};
+                for (let key in data) {
+                    newData[key] = fixExpiredDriveUrls(data[key]);
+                }
+                return newData;
+            }
+            return data;
+        }
+
+        // ==========================================
         // MANAJEMEN DRAFT / UNSAVED CHANGES
         // ==========================================
         let hasUnsavedChanges = false;
@@ -1537,6 +1557,9 @@
         // 🛠️ FUNGSI UNTUK MENAMPILKAN DATA (DIPISAH AGAR RAPI)
         // ==========================================
         function applyDataToDOM(result) {
+            // TERAPKAN PERBAIKAN URL DI SINI SEBELUM DI-RENDER
+            result = fixExpiredDriveUrls(result);
+
             const textElements = ['heroTitleLine1', 'heroTitleLine2', 'heroDescText', 'heroTitleText', 'heroRoleText', 'aboutTitle1', 'aboutTitleHighlight', 'aboutTitle2', 'bioP1', 'bioP2', 'bioP3', 'eduUni', 'eduMajor', 'eduGpa', 'eduStatus', 'eduHs', 'eduHsMajor', 'eduHsScore', 'visionTitle', 'visionDesc', 'statExpCount', 'statProjCount', 'skillsMainTitle', 'softwareStackTitle', 'expMainTitle', 'orgMainTitle', 'projMainTitle', 'contactTitle1', 'contactTitle2', 'contactDesc', 'contactCopyright'];
             
             textElements.forEach(id => {
@@ -1660,9 +1683,8 @@
                 const response = await sendDataToBackend(payload);
                 hideLoading();
                 if (response && response.id) {
-                    // MENGGUNAKAN THUMBNAIL URL AGAR BISA TAMPIL DI WEB
-                    // Parameter sz=w1920 memastikan resolusinya tetap besar dan jernih
-                    return `https://drive.google.com/thumbnail?id=${response.id}&sz=w1920`;
+                    // MENGGUNAKAN UC URL AGAR PERMANEN (TIDAK EXPIRED SEPERTI THUMBNAIL)
+                    return `https://drive.google.com/uc?export=view&id=${response.id}`;
                 }
                 return null;
             } catch (e) {
